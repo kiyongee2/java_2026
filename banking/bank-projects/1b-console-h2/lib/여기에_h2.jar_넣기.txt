@@ -1,0 +1,33 @@
+이 폴더(lib/)에 H2 데이터베이스 드라이버 jar 파일을 넣으세요.
+
+■ 다운로드 (둘 중 하나)
+  1) Maven Central 직접 링크:
+     https://repo1.maven.org/maven2/com/h2database/h2/2.4.240/h2-2.4.240.jar
+  2) H2 공식 사이트: https://www.h2database.com  →  Download  →  "Platform-Independent Zip"
+     압축 안의 bin/h2-*.jar 를 사용
+
+다운로드한 h2-2.4.240.jar 파일을 이 lib/ 폴더에 그대로 넣으면 됩니다.
+
+■ 중요! IntelliJ는 "라이브러리 등록"까지 해야 합니다
+  lib/ 폴더에 jar 파일만 넣어두면 인식되지 않습니다.
+  등록하지 않고 실행하면 다음 오류가 납니다:
+     java.lang.ClassNotFoundException: org.h2.Driver
+     java.sql.SQLException: No suitable driver found for jdbc:h2:./bankdb
+
+  [등록 방법]
+   File > Project Structure (Ctrl+Alt+Shift+S)
+     > Libraries > + > Java
+     > lib\h2-2.4.240.jar 선택
+     > 해당 모듈에 추가 > Apply > OK
+   이후 BankApp(또는 DBTest) 실행 → "접속 성공!"
+
+■ 터미널에서 실행 (프로젝트 루트 1b-console-h2 에서)
+  Windows:
+    javac -d out src\bank\*.java
+    java -cp "out;lib\h2-2.4.240.jar" bank.BankApp
+
+  Mac / Linux:
+    javac -d out src/bank/*.java
+    java -cp "out:lib/h2-2.4.240.jar" bank.BankApp
+
+  ※ classpath 구분자: Windows 는 ;  /  Mac·Linux 는 :

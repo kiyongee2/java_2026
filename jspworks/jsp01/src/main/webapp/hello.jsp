@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Web Page 1</title>
+<title>Insert title here</title>
 </head>
 <body>
-	<h2>AI Coaching 김 기용 입니다.</h2>
+	<h2>Hello~ JSP</h2>
 </body>
 </html>

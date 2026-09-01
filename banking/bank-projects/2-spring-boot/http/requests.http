@@ -1,0 +1,47 @@
+### IntelliJ HTTP Client 또는 터미널 curl 로 실행하세요.
+### 서버 실행 후 샘플 계좌: 110-0001(홍길동), 110-0002(김철수)
+
+### 1. 전체 계좌 목록
+GET http://localhost:8080/accounts
+
+### 2. 계좌 상세 조회
+GET http://localhost:8080/accounts/110-0001
+
+### 3. 계좌 개설
+POST http://localhost:8080/accounts
+Content-Type: application/json
+
+{ "owner": "이영희", "initialBalance": 30000 }
+
+### 4. 입금
+POST http://localhost:8080/accounts/110-0001/deposit
+Content-Type: application/json
+
+{ "amount": 50000 }
+
+### 5. 출금
+POST http://localhost:8080/accounts/110-0001/withdraw
+Content-Type: application/json
+
+{ "amount": 20000 }
+
+### 6. 이체 (110-0001 → 110-0002)
+POST http://localhost:8080/accounts/transfer
+Content-Type: application/json
+
+{ "from": "110-0001", "to": "110-0002", "amount": 30000 }
+
+### 7. 예금주 변경
+PUT http://localhost:8080/accounts/110-0002
+Content-Type: application/json
+
+{ "owner": "김영희" }
+
+### 8. 계좌 해지
+DELETE http://localhost:8080/accounts/110-0002
+
+### 9. (에러 테스트) 잔액 부족 출금 → 400 + 메시지
+POST http://localhost:8080/accounts/110-0001/withdraw
+Content-Type: application/json
+
+{ "amount": 99999999 }

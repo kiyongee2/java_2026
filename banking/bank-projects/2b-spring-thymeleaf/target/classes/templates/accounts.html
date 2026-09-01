@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>은행 계좌 관리</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="wrap">
+    <h1>🏦 은행 계좌 관리 <small>Spring Boot + Thymeleaf + H2</small></h1>
+
+    <!-- 결과/오류 메시지 (flash) -->
+    <div class="msg ok"  th:if="${message}" th:text="${message}"></div>
+    <div class="msg err" th:if="${error}"   th:text="${error}"></div>
+
+    <!-- 계좌 목록 -->
+    <h2>계좌 목록</h2>
+    <table>
+        <thead>
+        <tr><th>계좌번호</th><th>예금주</th><th class="r">잔액</th><th class="c">관리</th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="a : ${accounts}">
+            <td th:text="${a.accountNumber}">110-0001</td>
+            <td th:text="${a.owner}">홍길동</td>
+            <td class="r" th:text="${#numbers.formatInteger(a.balance, 0, 'COMMA')} + '원'">100,000원</td>
+            <td class="c">
+                <form th:action="@{'/accounts/' + ${a.accountNumber} + '/delete'}" method="post"
+                      onsubmit="return confirm('정말 해지하시겠습니까?');">
+                    <button class="danger">해지</button>
+                </form>
+            </td>
+        </tr>
+        <tr th:if="${accounts.isEmpty()}">
+            <td colspan="4" class="empty">등록된 계좌가 없습니다.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- 기능 폼들 -->
+    <div class="cards">
+        <div class="card">
+            <h3>➕ 계좌 개설</h3>
+            <form th:action="@{/accounts/create}" method="post">
+                <label>예금주 <input name="owner" required></label>
+                <label>초기 입금액 <input name="initialBalance" type="number" value="0" min="0"></label>
+                <button>개설</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>💰 입금</h3>
+            <form th:action="@{/accounts/deposit}" method="post">
+                <label>계좌번호 <input name="no" placeholder="110-0001" required></label>
+                <label>입금액 <input name="amount" type="number" value="10000" min="1" required></label>
+                <button>입금</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>💸 출금</h3>
+            <form th:action="@{/accounts/withdraw}" method="post">
+                <label>계좌번호 <input name="no" placeholder="110-0001" required></label>
+                <label>출금액 <input name="amount" type="number" value="10000" min="1" required></label>
+                <button>출금</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h3>🔄 이체</h3>
+            <form th:action="@{/accounts/transfer}" method="post">
+                <label>보내는 계좌 <input name="from" placeholder="110-0001" required></label>
+                <label>받는 계좌 <input name="to" placeholder="110-0002" required></label>
+                <label>이체 금액 <input name="amount" type="number" value="10000" min="1" required></label>
+                <button>이체</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="foot">H2 콘솔: <a href="/h2-console" target="_blank">/h2-console</a>
+        (JDBC URL: <code>jdbc:h2:mem:bankdb</code>, 사용자 <code>sa</code>)</p>
+</div>
+</body>
+</html>

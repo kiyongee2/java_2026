@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>은행 계좌 관리 시스템(콘솔) — 학습 교안</title>
+<style>
+  :root{--bg:#f4f6f9;--card:#fff;--ink:#1f2933;--muted:#52606d;--line:#e4e7eb;--accent:#e76f00;--accent2:#2c3e50;--code-bg:#282c34;--goal:#eafaf1;--goal-line:#27ae60;--ex:#eef4ff;--ex-line:#5b8def;--lab:#fff5e9;--lab-line:#e76f00;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","맑은 고딕",-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.75;}
+  header.hero{background:linear-gradient(135deg,#2e8b57,#1f6b45);color:#fff;padding:52px 24px;text-align:center;}
+  header.hero .eyebrow{letter-spacing:3px;font-size:.78rem;opacity:.9;text-transform:uppercase}
+  header.hero h1{margin:12px 0 8px;font-size:1.9rem}header.hero p{margin:0;opacity:.92}
+  header.hero .tags{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  header.hero .tags span{background:rgba(255,255,255,.16);border-radius:999px;padding:5px 13px;font-size:.82rem}
+  .wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px}
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:34px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  nav.toc h2{margin:0 0 12px;font-size:1.05rem;color:var(--accent2)}
+  nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:34px}
+  nav.toc a{color:var(--ink);text-decoration:none}nav.toc a:hover{color:var(--accent);text-decoration:underline}
+  section.module{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 30px;margin-bottom:26px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  section.module > h2{margin:0 0 6px;font-size:1.4rem;color:var(--accent2);display:flex;align-items:center;gap:12px;}
+  section.module > h2 .num{background:var(--accent);color:#fff;font-size:.95rem;font-weight:800;padding:4px 12px;border-radius:10px;min-width:38px;text-align:center;}
+  h3.blk{font-size:1.02rem;margin:22px 0 8px;font-weight:800}
+  .goal{background:var(--goal);border-left:5px solid var(--goal-line);border-radius:0 10px 10px 0;padding:14px 20px;margin:14px 0}
+  .goal .lbl{font-weight:800;color:#1e874b}.goal ul{margin:8px 0 0}
+  .concept h3.blk{color:var(--ink);border-left:4px solid var(--accent);padding-left:10px}
+  .ex{background:var(--ex);border-left:5px solid var(--ex-line);border-radius:0 10px 10px 0;padding:14px 20px;margin:16px 0}
+  .ex .lbl{font-weight:800;color:#2f5fc7}
+  .lab{background:var(--lab);border-left:5px solid var(--lab-line);border-radius:0 10px 10px 0;padding:14px 20px;margin:16px 0}
+  .lab .lbl{font-weight:800;color:#c85f00}.lab h4{margin:6px 0 6px;font-size:.98rem}
+  .note{background:#fffbea;border-left:5px solid #f0c000;border-radius:0 10px 10px 0;padding:12px 18px;margin:14px 0}
+  .note .lbl{font-weight:800;color:#a67c00}
+  ul{margin:8px 0}li{margin:5px 0}.muted{color:var(--muted)}
+  code{background:#eceef1;padding:2px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+  pre{background:var(--code-bg);color:#abb2bf;border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:Consolas,"D2Coding",monospace;font-size:.9rem;line-height:1.6;margin:10px 0}
+  pre .k{color:#c678dd}pre .t{color:#e5c07b}pre .s{color:#98c379}pre .c{color:#7f848e;font-style:italic}pre .f{color:#61afef}pre .n{color:#d19a66}
+  .out{background:#1b1e24;color:#9fd18a;border-radius:8px;padding:10px 14px;font-family:Consolas,"D2Coding",monospace;font-size:.86rem;margin:6px 0 0;white-space:pre-wrap}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.93rem}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:#f0f4f8;color:var(--accent2)}td.c,th.c{text-align:center}
+  details{margin-top:10px;background:#fff;border:1px solid #f0d9bf;border-radius:8px;padding:8px 14px}
+  details summary{cursor:pointer;font-weight:700;color:#c85f00}details pre{margin-top:10px}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:30px 20px}
+  .pill{display:inline-block;background:#eceef1;border-radius:6px;padding:2px 9px;margin:2px;font-size:.85rem}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="eyebrow">Java 프로그래밍 · 종합 실습 · 학습 교안</div>
+  <h1>은행 계좌 관리 시스템 (콘솔)</h1>
+  <p>클래스 · 객체 · 캡슐화 · 컬렉션 · 예외 처리를 하나로 엮는 실무형 예제</p>
+  <div class="tags"><span>🏦 은행 서버</span><span>📦 클래스·객체</span><span>🔒 캡슐화</span><span>🗂️ 컬렉션(Map)</span><span>⚠️ 예외 처리</span></div>
+</header>
+<div class="wrap">
+  <nav class="toc">
+    <h2>📚 학습 목차</h2>
+    <ol>
+      <li><a href="#m1">프로그램 개요 &amp; 클래스 다이어그램</a></li>
+      <li><a href="#m2">Account 클래스 (계좌)</a></li>
+      <li><a href="#m3">Bank 클래스 (은행)</a></li>
+      <li><a href="#m4">BankApp 클래스 (실행·메뉴)</a></li>
+      <li><a href="#m5">실행 결과 &amp; 전체 흐름</a></li>
+      <li><a href="#m6">실습문제 (확장 과제)</a></li>
+      <li><a href="#m7">콘솔 + H2 DB 버전 (JDBC)</a></li>
+    </ol>
+  </nav>
+
+  <!-- ===================== MODULE 1 ===================== -->
+  <section class="module" id="m1">
+    <h2><span class="num">1</span> 프로그램 개요 &amp; 클래스 다이어그램</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>여러 클래스가 협력하여 하나의 프로그램을 이루는 구조를 이해한다.</li>
+      <li>각 클래스의 <b>역할(책임)</b>을 구분하고, 클래스 사이의 관계를 UML로 읽을 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 무엇을 만드는가</h3>
+      <ul>
+        <li>은행의 핵심 업무인 <b>계좌 개설 · 입금 · 출금 · 잔액 조회 · 이체</b>를 콘솔에서 다루는 프로그램이다.</li>
+        <li>실무의 은행 서버도 결국 "계좌(Account)라는 데이터"를 "은행(Bank)이 관리"하는 구조다. 이 예제는 그 뼈대를 가장 단순하게 보여준다.</li>
+        <li>프로그램은 <b>세 개의 클래스</b>로 나뉜다. 역할을 나누면 코드가 읽기 쉽고 고치기 쉬워진다.</li>
+      </ul>
+      <table>
+        <tr><th>클래스</th><th>역할(책임)</th><th>실무에서 대응</th></tr>
+        <tr><td><code>Account</code></td><td>계좌 한 개의 데이터(계좌번호·예금주·잔액)와 입금/출금 규칙</td><td>도메인 모델(Entity)</td></tr>
+        <tr><td><code>Bank</code></td><td>여러 계좌를 보관하고 관리하는 업무 로직(생성·조회·이체)</td><td>서비스 / 저장소(DB)</td></tr>
+        <tr><td><code>BankApp</code></td><td>사용자의 입력을 받아 Bank에게 일을 시키는 실행 진입점</td><td>화면 / 컨트롤러</td></tr>
+      </table>
+    </div>
+
+    <div class="concept"><h3 class="blk">🧩 클래스 다이어그램 (UML)</h3>
+      <p class="muted"><code>BankApp</code>은 <code>Bank</code>를 <b>사용(의존)</b>하고, <code>Bank</code>는 여러 개의 <code>Account</code>를 <b>포함(집합)</b>한다. 즉 "은행 하나가 계좌 여러 개를 가진다".</p>
+      <figure style="margin:16px 0 6px;text-align:center;display:flex;flex-direction:column;align-items:center">
+        <svg id="bankuml" style="width:100%;max-width:820px;height:auto;display:block;margin:0 auto" viewBox="0 0 820 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BankApp, Bank, Account 클래스 관계 UML 다이어그램">
+          <style>
+            #bankuml .cls{fill:#fff;stroke:#2e8b57;stroke-width:1.5}
+            #bankuml .div{stroke:#2e8b57;stroke-width:1.5}
+            #bankuml .nm{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-weight:700;font-size:17px;fill:#1f2933;text-anchor:middle}
+            #bankuml .mt{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:14.5px;fill:#1f2933;text-anchor:start}
+            #bankuml .rel{stroke:#e76f00;stroke-width:1.6;fill:none}
+            #bankuml .reldash{stroke:#e76f00;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+            #bankuml .lbl{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:13px;fill:#c85f00;text-anchor:middle}
+            #bankuml .mult{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:13px;fill:#52606d}
+            #bankuml .dia{fill:#fff;stroke:#e76f00;stroke-width:1.6}
+          </style>
+
+          <!-- ===== BankApp (실행) : 상단 좌측 ===== -->
+          <rect class="cls" x="30" y="18" width="330" height="150"/>
+          <line class="div" x1="30" y1="54" x2="360" y2="54"/>
+          <line class="div" x1="30" y1="88" x2="360" y2="88"/>
+          <text class="nm" x="195" y="42">BankApp  «실행»</text>
+          <text class="mt" x="44" y="76">- bank : Bank</text>
+          <text class="mt" x="44" y="110">+ main(args : String[]) : void</text>
+          <text class="mt" x="44" y="132">- createAccount() / deposit() ...</text>
+          <text class="mt" x="44" y="154">- withdraw() / transfer() : void</text>
+
+          <!-- ===== Bank (은행) : 하단 좌측 ===== -->
+          <rect class="cls" x="30" y="290" width="330" height="238"/>
+          <line class="div" x1="30" y1="326" x2="360" y2="326"/>
+          <line class="div" x1="30" y1="384" x2="360" y2="384"/>
+          <text class="nm" x="195" y="314">Bank  (은행)</text>
+          <text class="mt" x="44" y="350">- accounts : Map&lt;String, Account&gt;</text>
+          <text class="mt" x="44" y="372">- sequence : int</text>
+          <text class="mt" x="44" y="408">+ createAccount(owner, init) : Account</text>
+          <text class="mt" x="44" y="430">+ findAccount(no) : Account</text>
+          <text class="mt" x="44" y="452">+ deposit(no, amount) : void</text>
+          <text class="mt" x="44" y="474">+ withdraw(no, amount) : void</text>
+          <text class="mt" x="44" y="496">+ transfer(from, to, amount) : void</text>
+          <text class="mt" x="44" y="518">+ getAllAccounts() : Map</text>
+
+          <!-- ===== Account (계좌) : 하단 우측 ===== -->
+          <rect class="cls" x="470" y="278" width="320" height="262"/>
+          <line class="div" x1="470" y1="314" x2="790" y2="314"/>
+          <line class="div" x1="470" y1="396" x2="790" y2="396"/>
+          <text class="nm" x="630" y="302">Account  (계좌)</text>
+          <text class="mt" x="484" y="338">- accountNumber : String</text>
+          <text class="mt" x="484" y="360">- owner : String</text>
+          <text class="mt" x="484" y="382">- balance : long</text>
+          <text class="mt" x="484" y="420">+ deposit(amount : long) : void</text>
+          <text class="mt" x="484" y="442">+ withdraw(amount : long) : void</text>
+          <text class="mt" x="484" y="464">+ getBalance() : long</text>
+          <text class="mt" x="484" y="486">+ getOwner() : String</text>
+          <text class="mt" x="484" y="508">+ getAccountNumber() : String</text>
+          <text class="mt" x="484" y="530">+ toString() : String</text>
+
+          <!-- 관계 ①: BankApp → Bank (의존/사용, 점선 열린 화살표) -->
+          <line class="reldash" x1="195" y1="168" x2="195" y2="290"/>
+          <polyline class="rel" points="186,278 195,290 204,278"/>
+          <text class="lbl" x="240" y="234">사용(uses)</text>
+
+          <!-- 관계 ②: Bank ◇—— Account (집합, 속 빈 마름모는 전체=Bank 쪽) -->
+          <polygon class="dia" points="360,360 380,351 400,360 380,369"/>
+          <line class="rel" x1="400" y1="360" x2="470" y2="360"/>
+          <text class="mult" x="410" y="352">1</text>
+          <text class="mult" x="456" y="352">*</text>
+          <text class="lbl" x="415" y="384">보유(has)</text>
+        </svg>
+        <figcaption class="muted" style="font-size:.85rem;margin-top:6px">UML — <code>BankApp</code>이 <code>Bank</code>를 사용하고(점선 화살표), <code>Bank</code>가 여러 <code>Account</code>를 보유한다(속 빈 마름모 ◇ = 전체 쪽인 Bank). <code>1 … *</code>는 "은행 1개 : 계좌 여러 개".</figcaption>
+      </figure>
+      <p class="muted">읽는 법 — <b>점선 화살표(⇢)</b>는 "A가 B를 사용한다(의존)", <b>속 빈 마름모(◇)</b>는 "전체가 부분을 보유한다(집합)". 마름모는 항상 <b>전체(포함하는 쪽)</b>에 붙는다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 2 ===================== -->
+  <section class="module" id="m2">
+    <h2><span class="num">2</span> Account 클래스 (계좌)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>필드를 <code>private</code>로 숨기고 메서드로만 다루는 <b>캡슐화</b>를 이해한다.</li>
+      <li>잘못된 입금/출금을 <b>예외</b>로 막는 방어적 코드를 작성할 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <ul>
+        <li>계좌는 <b>계좌번호 · 예금주 · 잔액</b>이라는 데이터를 가진다. 이 값들을 <code>private</code>으로 감춰서(캡슐화) 외부가 잔액을 마음대로 바꾸지 못하게 한다.</li>
+        <li>잔액 변경은 오직 <code>deposit()</code>·<code>withdraw()</code>를 통해서만 일어난다. 여기서 "0원 이하 금지, 잔액 부족 금지" 같은 <b>규칙</b>을 검사한다.</li>
+        <li>계좌번호와 예금주는 한 번 정해지면 바뀌지 않으므로 <code>final</code>로 선언한다.</li>
+      </ul>
+    </div>
+    <div class="ex"><div class="lbl">💡 Account.java — 계좌 클래스</div>
+<pre><span class="k">package</span> bank;
+
+<span class="k">public class</span> <span class="t">Account</span> {
+
+    <span class="k">private final</span> <span class="t">String</span> accountNumber;  <span class="c">// 계좌번호 (변경 불가 → final)</span>
+    <span class="k">private final</span> <span class="t">String</span> owner;          <span class="c">// 예금주 이름</span>
+    <span class="k">private</span> <span class="k">long</span> balance;                 <span class="c">// 잔액 (음수가 될 수 없음)</span>
+
+    <span class="k">public</span> <span class="f">Account</span>(<span class="t">String</span> accountNumber, <span class="t">String</span> owner, <span class="k">long</span> initialBalance) {
+        <span class="k">this</span>.accountNumber = accountNumber;
+        <span class="k">this</span>.owner = owner;
+        <span class="k">this</span>.balance = initialBalance;
+    }
+
+    <span class="c">// 입금: 0보다 큰 금액만 허용</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">deposit</span>(<span class="k">long</span> amount) {
+        <span class="k">if</span> (amount &lt;= <span class="n">0</span>) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"입금액은 0보다 커야 합니다."</span>);
+        }
+        <span class="k">this</span>.balance += amount;
+    }
+
+    <span class="c">// 출금: 금액이 유효하고 잔액이 충분할 때만 가능</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">withdraw</span>(<span class="k">long</span> amount) {
+        <span class="k">if</span> (amount &lt;= <span class="n">0</span>) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"출금액은 0보다 커야 합니다."</span>);
+        }
+        <span class="k">if</span> (amount &gt; <span class="k">this</span>.balance) {
+            <span class="k">throw new</span> <span class="t">IllegalStateException</span>(<span class="s">"잔액이 부족합니다. (현재 잔액: "</span> + <span class="k">this</span>.balance + <span class="s">"원)"</span>);
+        }
+        <span class="k">this</span>.balance -= amount;
+    }
+
+    <span class="c">// Getter: 외부에서는 값을 읽기만 가능 (직접 수정 불가 = 캡슐화)</span>
+    <span class="k">public</span> <span class="t">String</span> <span class="f">getAccountNumber</span>() { <span class="k">return</span> accountNumber; }
+    <span class="k">public</span> <span class="t">String</span> <span class="f">getOwner</span>()         { <span class="k">return</span> owner; }
+    <span class="k">public</span> <span class="k">long</span> <span class="f">getBalance</span>()          { <span class="k">return</span> balance; }
+
+    <span class="t">@Override</span>
+    <span class="k">public</span> <span class="t">String</span> <span class="f">toString</span>() {
+        <span class="k">return</span> <span class="t">String</span>.<span class="f">format</span>(<span class="s">"[%s] %s님 / 잔액: %,d원"</span>, accountNumber, owner, balance);
+    }
+}</pre>
+      <p class="muted" style="margin-top:8px"><b>핵심</b> — 잔액(<code>balance</code>)은 <code>private</code>이라 외부에서 <code>account.balance = 999</code> 같은 조작이 불가능하다. 반드시 <code>deposit()</code>/<code>withdraw()</code>를 거치므로 "규칙을 어긴 잔액"이 생길 수 없다. 이것이 캡슐화가 데이터를 지키는 방식이다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 3 ===================== -->
+  <section class="module" id="m3">
+    <h2><span class="num">3</span> Bank 클래스 (은행)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li><code>Map</code>(컬렉션)으로 여러 객체를 <b>키로 저장·조회</b>하는 방법을 익힌다.</li>
+      <li>여러 계좌에 걸친 <b>업무 로직(이체)</b>을 설계할 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <ul>
+        <li><code>Bank</code>는 계좌들을 <code>Map&lt;String, Account&gt;</code>에 담는다. <b>키(key)는 계좌번호, 값(value)은 계좌 객체</b>다. 계좌번호로 즉시 계좌를 찾을 수 있다.</li>
+        <li>실무에서는 이 <code>Map</code> 자리에 <b>데이터베이스(DB)</b>가 들어간다. 저장·조회의 개념은 똑같다.</li>
+        <li><b>이체</b>는 "출금 계좌에서 빼고 → 입금 계좌에 더한다". 출금이 실패(잔액 부족)하면 예외가 발생해 입금은 진행되지 않는다.</li>
+      </ul>
+    </div>
+    <div class="ex"><div class="lbl">💡 Bank.java — 은행(계좌 관리) 클래스</div>
+<pre><span class="k">package</span> bank;
+
+<span class="k">import</span> java.util.LinkedHashMap;
+<span class="k">import</span> java.util.Map;
+
+<span class="k">public class</span> <span class="t">Bank</span> {
+
+    <span class="c">// 계좌번호(key) → 계좌(value). LinkedHashMap: 생성 순서 유지</span>
+    <span class="k">private final</span> <span class="t">Map</span>&lt;<span class="t">String</span>, <span class="t">Account</span>&gt; accounts = <span class="k">new</span> <span class="t">LinkedHashMap</span>&lt;&gt;();
+    <span class="k">private</span> <span class="k">int</span> sequence = <span class="n">1</span>;   <span class="c">// 계좌번호 자동 생성용 (110-0001 형태)</span>
+
+    <span class="c">// 새 계좌 개설 → 생성된 계좌를 반환</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">createAccount</span>(<span class="t">String</span> owner, <span class="k">long</span> initialBalance) {
+        <span class="k">if</span> (owner == <span class="k">null</span> || owner.<span class="f">isBlank</span>()) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"예금주 이름을 입력해야 합니다."</span>);
+        }
+        <span class="k">if</span> (initialBalance &lt; <span class="n">0</span>) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"초기 잔액은 0원 이상이어야 합니다."</span>);
+        }
+        <span class="t">String</span> accountNumber = <span class="t">String</span>.<span class="f">format</span>(<span class="s">"110-%04d"</span>, sequence++);
+        <span class="t">Account</span> account = <span class="k">new</span> <span class="t">Account</span>(accountNumber, owner, initialBalance);
+        accounts.<span class="f">put</span>(accountNumber, account);
+        <span class="k">return</span> account;
+    }
+
+    <span class="c">// 계좌번호로 계좌 찾기 (없으면 예외)</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">findAccount</span>(<span class="t">String</span> accountNumber) {
+        <span class="t">Account</span> account = accounts.<span class="f">get</span>(accountNumber);
+        <span class="k">if</span> (account == <span class="k">null</span>) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"존재하지 않는 계좌입니다: "</span> + accountNumber);
+        }
+        <span class="k">return</span> account;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> <span class="f">deposit</span>(<span class="t">String</span> accountNumber, <span class="k">long</span> amount) {
+        <span class="f">findAccount</span>(accountNumber).<span class="f">deposit</span>(amount);
+    }
+
+    <span class="k">public</span> <span class="k">void</span> <span class="f">withdraw</span>(<span class="t">String</span> accountNumber, <span class="k">long</span> amount) {
+        <span class="f">findAccount</span>(accountNumber).<span class="f">withdraw</span>(amount);
+    }
+
+    <span class="c">// 이체: 출금 성공 후 입금 (출금 실패 시 예외 → 입금 진행 안 됨)</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">transfer</span>(<span class="t">String</span> fromAccount, <span class="t">String</span> toAccount, <span class="k">long</span> amount) {
+        <span class="k">if</span> (fromAccount.<span class="f">equals</span>(toAccount)) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"같은 계좌로는 이체할 수 없습니다."</span>);
+        }
+        <span class="t">Account</span> from = <span class="f">findAccount</span>(fromAccount);
+        <span class="t">Account</span> to = <span class="f">findAccount</span>(toAccount);
+
+        from.<span class="f">withdraw</span>(amount);   <span class="c">// 잔액 부족이면 여기서 예외 발생</span>
+        to.<span class="f">deposit</span>(amount);
+    }
+
+    <span class="c">// 전체 계좌 반환 (목록 출력용)</span>
+    <span class="k">public</span> <span class="t">Map</span>&lt;<span class="t">String</span>, <span class="t">Account</span>&gt; <span class="f">getAllAccounts</span>() {
+        <span class="k">return</span> accounts;
+    }
+}</pre>
+      <p class="muted" style="margin-top:8px"><b>핵심</b> — <code>deposit()</code>/<code>withdraw()</code>가 규칙 검사를 <code>Account</code>에 위임한다는 점에 주목하자. <code>Bank</code>는 "어떤 계좌인지" 찾기만 하고, "얼마를 넣고 뺄 수 있는지"는 <code>Account</code>가 스스로 판단한다. 책임이 깔끔하게 나뉘어 있다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 4 ===================== -->
+  <section class="module" id="m4">
+    <h2><span class="num">4</span> BankApp 클래스 (실행·메뉴)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li><code>Scanner</code>로 사용자 입력을 받아 프로그램을 제어할 수 있다.</li>
+      <li><code>try-catch</code>로 예외를 한곳에서 처리해 프로그램이 죽지 않게 만든다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <ul>
+        <li><code>BankApp</code>은 <b>사용자와 대화하는 창구</b>다. 메뉴 번호를 입력받아 그에 맞는 <code>Bank</code>의 기능을 호출한다.</li>
+        <li>업무 로직에서 던진 예외(잔액 부족 등)를 <code>main</code>의 <code>try-catch</code>가 잡아 <code>[오류] ...</code>로 안내하고, 프로그램은 계속 돈다.</li>
+        <li>뒤에서 Spring Boot 서버로 확장하면, 이 "메뉴 선택(switch)" 부분이 그대로 "URL 요청(REST API)"으로 바뀐다.</li>
+      </ul>
+    </div>
+    <div class="ex"><div class="lbl">💡 BankApp.java — 실행 진입점(main)과 콘솔 메뉴</div>
+<pre><span class="k">package</span> bank;
+
+<span class="k">import</span> java.util.Scanner;
+
+<span class="k">public class</span> <span class="t">BankApp</span> {
+
+    <span class="k">private static final</span> <span class="t">Bank</span> bank = <span class="k">new</span> <span class="t">Bank</span>();
+    <span class="k">private static final</span> <span class="t">Scanner</span> scanner = <span class="k">new</span> <span class="t">Scanner</span>(<span class="t">System</span>.in);
+
+    <span class="k">public static</span> <span class="k">void</span> <span class="f">main</span>(<span class="t">String</span>[] args) {
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"=== 스페이스시엘 은행 시스템 (콘솔 버전) ==="</span>);
+
+        <span class="c">// 바로 체험하도록 샘플 계좌 2개 생성</span>
+        bank.<span class="f">createAccount</span>(<span class="s">"홍길동"</span>, <span class="n">100000</span>);
+        bank.<span class="f">createAccount</span>(<span class="s">"김철수"</span>, <span class="n">50000</span>);
+
+        <span class="k">while</span> (<span class="k">true</span>) {
+            <span class="f">printMenu</span>();
+            <span class="t">String</span> choice = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+
+            <span class="k">try</span> {
+                <span class="k">switch</span> (choice) {
+                    <span class="k">case</span> <span class="s">"1"</span> -&gt; <span class="f">createAccount</span>();
+                    <span class="k">case</span> <span class="s">"2"</span> -&gt; <span class="f">deposit</span>();
+                    <span class="k">case</span> <span class="s">"3"</span> -&gt; <span class="f">withdraw</span>();
+                    <span class="k">case</span> <span class="s">"4"</span> -&gt; <span class="f">checkBalance</span>();
+                    <span class="k">case</span> <span class="s">"5"</span> -&gt; <span class="f">transfer</span>();
+                    <span class="k">case</span> <span class="s">"6"</span> -&gt; <span class="f">printAllAccounts</span>();
+                    <span class="k">case</span> <span class="s">"0"</span> -&gt; {
+                        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"프로그램을 종료합니다."</span>);
+                        <span class="k">return</span>;
+                    }
+                    <span class="k">default</span> -&gt; <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"잘못된 선택입니다."</span>);
+                }
+            } <span class="k">catch</span> (<span class="t">Exception</span> e) {
+                <span class="c">// 업무 로직이 던진 예외를 한곳에서 처리 → 프로그램이 죽지 않음</span>
+                <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"[오류] "</span> + e.<span class="f">getMessage</span>());
+            }
+            <span class="t">System</span>.out.<span class="f">println</span>();
+        }
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">printMenu</span>() {
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"1.계좌개설  2.입금  3.출금  4.잔액조회  5.이체  6.전체목록  0.종료"</span>);
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"메뉴 선택 &gt; "</span>);
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">createAccount</span>() {
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"예금주 이름: "</span>);
+        <span class="t">String</span> owner = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"초기 입금액: "</span>);
+        <span class="k">long</span> initial = <span class="t">Long</span>.<span class="f">parseLong</span>(scanner.<span class="f">nextLine</span>().<span class="f">trim</span>());
+
+        <span class="t">Account</span> account = bank.<span class="f">createAccount</span>(owner, initial);
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"계좌 개설 완료 → "</span> + account);
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">deposit</span>() {
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"계좌번호: "</span>);
+        <span class="t">String</span> acc = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"입금액: "</span>);
+        <span class="k">long</span> amount = <span class="t">Long</span>.<span class="f">parseLong</span>(scanner.<span class="f">nextLine</span>().<span class="f">trim</span>());
+
+        bank.<span class="f">deposit</span>(acc, amount);
+        <span class="t">System</span>.out.<span class="f">println</span>(amount + <span class="s">"원 입금 완료 → "</span> + bank.<span class="f">findAccount</span>(acc));
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">withdraw</span>() {
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"계좌번호: "</span>);
+        <span class="t">String</span> acc = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"출금액: "</span>);
+        <span class="k">long</span> amount = <span class="t">Long</span>.<span class="f">parseLong</span>(scanner.<span class="f">nextLine</span>().<span class="f">trim</span>());
+
+        bank.<span class="f">withdraw</span>(acc, amount);
+        <span class="t">System</span>.out.<span class="f">println</span>(amount + <span class="s">"원 출금 완료 → "</span> + bank.<span class="f">findAccount</span>(acc));
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">checkBalance</span>() {
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"계좌번호: "</span>);
+        <span class="t">String</span> acc = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+        <span class="t">System</span>.out.<span class="f">println</span>(bank.<span class="f">findAccount</span>(acc));
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">transfer</span>() {
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"보내는 계좌번호: "</span>);
+        <span class="t">String</span> from = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"받는 계좌번호: "</span>);
+        <span class="t">String</span> to = scanner.<span class="f">nextLine</span>().<span class="f">trim</span>();
+        <span class="t">System</span>.out.<span class="f">print</span>(<span class="s">"이체 금액: "</span>);
+        <span class="k">long</span> amount = <span class="t">Long</span>.<span class="f">parseLong</span>(scanner.<span class="f">nextLine</span>().<span class="f">trim</span>());
+
+        bank.<span class="f">transfer</span>(from, to, amount);
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"이체 완료!"</span>);
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"  보낸 계좌 → "</span> + bank.<span class="f">findAccount</span>(from));
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"  받은 계좌 → "</span> + bank.<span class="f">findAccount</span>(to));
+    }
+
+    <span class="k">private static</span> <span class="k">void</span> <span class="f">printAllAccounts</span>() {
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"=== 전체 계좌 목록 ==="</span>);
+        bank.<span class="f">getAllAccounts</span>().<span class="f">values</span>().<span class="f">forEach</span>(acc -&gt; <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"  "</span> + acc));
+    }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 5 ===================== -->
+  <section class="module" id="m5">
+    <h2><span class="num">5</span> 실행 결과 &amp; 전체 흐름</h2>
+    <div class="concept"><h3 class="blk">▶ 실행 방법</h3>
+<pre><span class="c"># 터미널에서</span>
+cd 1-console
+javac -d out src/bank/*.java
+java -cp out bank.BankApp</pre>
+      <p class="muted">또는 IntelliJ에서 <code>BankApp.java</code>를 열고 <code>main</code> 옆의 ▶ 버튼으로 실행한다. 시작하면 홍길동(110-0001)·김철수(110-0002) 계좌가 미리 만들어져 있다.</p>
+    </div>
+    <div class="ex"><div class="lbl">💡 실행 예시 — 잔액조회 → 입금 → 이체 → (잔액부족 오류)</div>
+      <div class="out">=== 스페이스시엘 은행 시스템 (콘솔 버전) ===
+1.계좌개설  2.입금  3.출금  4.잔액조회  5.이체  6.전체목록  0.종료
+메뉴 선택 &gt; 4
+계좌번호: 110-0001
+[110-0001] 홍길동님 / 잔액: 100,000원
+
+메뉴 선택 &gt; 2
+계좌번호: 110-0001
+입금액: 50000
+50000원 입금 완료 → [110-0001] 홍길동님 / 잔액: 150,000원
+
+메뉴 선택 &gt; 5
+보내는 계좌번호: 110-0001
+받는 계좌번호: 110-0002
+이체 금액: 30000
+이체 완료!
+  보낸 계좌 → [110-0001] 홍길동님 / 잔액: 120,000원
+  받은 계좌 → [110-0002] 김철수님 / 잔액: 80,000원
+
+메뉴 선택 &gt; 3
+계좌번호: 110-0002
+출금액: 999999
+[오류] 잔액이 부족합니다. (현재 잔액: 80000원)
+
+메뉴 선택 &gt; 0
+프로그램을 종료합니다.</div>
+    </div>
+    <div class="concept"><h3 class="blk">🔄 객체 간 협력 흐름 (이체를 예로)</h3>
+      <p>사용자가 "5. 이체"를 선택하면 아래 순서로 <b>세 객체가 협력</b>한다. 각 객체는 자기 책임만 수행한다.</p>
+      <table>
+        <tr><th class="c">순서</th><th>주체</th><th>하는 일</th></tr>
+        <tr><td class="c">①</td><td><code>BankApp</code></td><td>계좌번호·금액을 입력받아 <code>bank.transfer(...)</code> 호출</td></tr>
+        <tr><td class="c">②</td><td><code>Bank</code></td><td><code>findAccount()</code>로 두 계좌를 찾고, 출금 계좌의 <code>withdraw()</code> → 입금 계좌의 <code>deposit()</code> 호출</td></tr>
+        <tr><td class="c">③</td><td><code>Account</code></td><td>각자 잔액 규칙을 검사하고 <code>balance</code>를 변경(부족하면 예외)</td></tr>
+        <tr><td class="c">④</td><td><code>BankApp</code></td><td>정상이면 결과 출력, 예외면 <code>try-catch</code>로 <code>[오류]</code> 안내</td></tr>
+      </table>
+    </div>
+    <div class="concept"><h3 class="blk">📁 완성 프로젝트 · 다운로드 &amp; 실행</h3>
+      <p class="muted">아래 완성 소스는 <code>bank-projects/1-console</code> 폴더에 저장되어 있습니다. 그대로 열어 바로 실행할 수 있습니다.</p>
+<pre>bank-projects/1-console/
+└─ src/bank/
+   ├─ <span class="t">Account.java</span>   <span class="c">// 계좌 (데이터 + 입금/출금 규칙)</span>
+   ├─ <span class="t">Bank.java</span>      <span class="c">// 은행 (계좌 관리 · 이체)</span>
+   └─ <span class="t">BankApp.java</span>   <span class="c">// 실행 진입점(main) · 콘솔 메뉴</span></pre>
+<pre><span class="c"># 터미널에서 실행</span>
+cd bank-projects/1-console
+javac -d out src/bank/*.java
+java -cp out bank.BankApp</pre>
+      <p class="muted">IntelliJ에서는 <code>BankApp.java</code>의 <code>main</code> ▶ 버튼으로 실행. 실행하면 홍길동(110-0001)·김철수(110-0002) 계좌가 준비돼 있습니다. Spring Boot 완성본은 같은 <code>bank-projects</code> 폴더의 <code>2-spring-boot</code>에 함께 들어 있습니다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 6 ===================== -->
+  <section class="module" id="m6">
+    <h2><span class="num">6</span> 실습문제 (확장 과제)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>배운 구조 위에 새로운 기능을 스스로 얹어 본다.</li>
+    </ul></div>
+
+    <div class="lab"><div class="lbl">✏️ 실습문제</div>
+      <h4>실습 1. 계좌 비밀번호 추가하기</h4>
+      <p><code>Account</code>에 <code>password</code>(String) 필드를 추가하고, 출금·이체 시 비밀번호가 맞아야만 진행되도록 만드세요. 틀리면 예외를 던집니다.</p>
+      <details><summary>정답 보기 (핵심 부분)</summary>
+<pre><span class="k">public class</span> <span class="t">Account</span> {
+    <span class="k">private final</span> <span class="t">String</span> password;   <span class="c">// 비밀번호 필드 추가</span>
+    <span class="c">// ... 생성자에서 password 도 함께 받아 초기화 ...</span>
+
+    <span class="c">// 비밀번호 확인 메서드</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">verifyPassword</span>(<span class="t">String</span> input) {
+        <span class="k">if</span> (!password.<span class="f">equals</span>(input)) {
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"비밀번호가 일치하지 않습니다."</span>);
+        }
+    }
+}
+
+<span class="c">// Bank 의 출금 - 비밀번호 확인 후 진행</span>
+<span class="k">public</span> <span class="k">void</span> <span class="f">withdraw</span>(<span class="t">String</span> accountNumber, <span class="t">String</span> password, <span class="k">long</span> amount) {
+    <span class="t">Account</span> account = <span class="f">findAccount</span>(accountNumber);
+    account.<span class="f">verifyPassword</span>(password);   <span class="c">// 틀리면 여기서 예외</span>
+    account.<span class="f">withdraw</span>(amount);
+}</pre>
+      </details>
+    </div>
+
+    <div class="lab"><div class="lbl">✏️ 실습문제</div>
+      <h4>실습 2. 거래 내역(입출금 기록) 남기기</h4>
+      <p>각 <code>Account</code>가 자신의 거래 내역을 <code>List&lt;String&gt;</code>으로 보관하도록 하세요. 입금/출금/이체 때마다 <code>"입금 +50000 (잔액 150000)"</code> 형태로 기록하고, 조회 기능(7번 메뉴)을 추가합니다.</p>
+      <details><summary>정답 보기 (핵심 부분)</summary>
+<pre><span class="k">public class</span> <span class="t">Account</span> {
+    <span class="k">private final</span> <span class="t">List</span>&lt;<span class="t">String</span>&gt; history = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;();
+
+    <span class="k">public</span> <span class="k">void</span> <span class="f">deposit</span>(<span class="k">long</span> amount) {
+        <span class="c">// ... 기존 검사 ...</span>
+        <span class="k">this</span>.balance += amount;
+        history.<span class="f">add</span>(<span class="s">"입금 +"</span> + amount + <span class="s">" (잔액 "</span> + balance + <span class="s">")"</span>);
+    }
+
+    <span class="k">public</span> <span class="t">List</span>&lt;<span class="t">String</span>&gt; <span class="f">getHistory</span>() { <span class="k">return</span> history; }
+}</pre>
+        <p class="muted">출금·이체에도 같은 방식으로 <code>history.add(...)</code>를 넣으면 된다.</p>
+      </details>
+    </div>
+
+    <div class="lab"><div class="lbl">✏️ 실습문제</div>
+      <h4>실습 3. 계좌 종류를 상속으로 나누기 ★</h4>
+      <p>앞 단원(상속·다형성)과 연결해 보자. <code>Account</code>를 부모로 두고, 이자가 붙는 <code>SavingsAccount</code>(적금)를 자식으로 만들어 <code>addInterest()</code>(이자 지급) 메서드를 추가하세요. <code>Bank</code>는 부모 타입 <code>Account</code>로 모두 관리할 수 있어야 합니다(다형성).</p>
+      <details><summary>정답 보기 (핵심 부분)</summary>
+<pre><span class="c">// Account 를 상속한 적금 계좌</span>
+<span class="k">public class</span> <span class="t">SavingsAccount</span> <span class="k">extends</span> <span class="t">Account</span> {
+    <span class="k">private final</span> <span class="k">double</span> interestRate;   <span class="c">// 이자율 (예: 0.03 = 3%)</span>
+
+    <span class="k">public</span> <span class="f">SavingsAccount</span>(<span class="t">String</span> no, <span class="t">String</span> owner, <span class="k">long</span> init, <span class="k">double</span> rate) {
+        <span class="k">super</span>(no, owner, init);      <span class="c">// 부모(Account) 생성자 호출</span>
+        <span class="k">this</span>.interestRate = rate;
+    }
+
+    <span class="c">// 자식이 추가한 기능: 이자 지급</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">addInterest</span>() {
+        <span class="k">long</span> interest = (<span class="k">long</span>)(<span class="f">getBalance</span>() * interestRate);
+        <span class="f">deposit</span>(interest);   <span class="c">// 부모의 deposit() 재사용</span>
+        <span class="t">System</span>.out.<span class="f">println</span>(<span class="s">"이자 "</span> + interest + <span class="s">"원 지급"</span>);
+    }
+}
+
+<span class="c">// Bank 는 부모 타입으로 담으므로 코드 변경이 거의 없다 (다형성)</span>
+<span class="t">Account</span> acc = <span class="k">new</span> <span class="t">SavingsAccount</span>(<span class="s">"110-0003"</span>, <span class="s">"이영희"</span>, <span class="n">1000000</span>, <span class="n">0.03</span>);</pre>
+        <p class="muted">부모 타입 <code>Account</code> 하나로 일반 계좌와 적금 계좌를 함께 관리하는 것이 <b>다형성</b>이다. <code>addInterest()</code> 같은 자식 고유 기능을 쓸 때만 <code>instanceof</code>로 확인 후 다운캐스팅하면 된다.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 7 (H2 DB 버전) ===================== -->
+  <section class="module" id="m7">
+    <h2><span class="num">7</span> 콘솔 + H2 DB 버전 (JDBC)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>메모리(Map)의 한계를 이해하고, 데이터를 <b>DB에 영구 저장</b>할 수 있다.</li>
+      <li>순수 Java의 <b>JDBC</b>로 DB에 연결해 CRUD를 수행할 수 있다.</li>
+      <li>이체를 <b>트랜잭션(commit/rollback)</b>으로 안전하게 처리할 수 있다.</li>
+    </ul></div>
+
+    <div class="concept"><h3 class="blk">📖 왜 DB가 필요한가</h3>
+      <ul>
+        <li>앞의 콘솔 버전은 계좌를 <code>Map</code>(메모리)에 담았다 → <b>프로그램을 끄면 데이터가 모두 사라진다.</b></li>
+        <li>실무에서는 데이터를 <b>DB에 저장</b>해 영구 보관한다. 여기서는 설치가 필요 없는 경량 DB인 <b>H2</b>를 사용한다(파일 하나로 동작).</li>
+        <li>Spring 없이 순수 Java의 <b>JDBC</b>로 DB를 다뤄 "DB 접근의 원리"를 먼저 익힌다. 그다음 단계가 Spring Data JPA다.</li>
+      </ul>
+      <table>
+        <tr><th class="c">단계</th><th>JDBC 흐름</th><th>사용 클래스</th></tr>
+        <tr><td class="c">①</td><td>DB에 연결</td><td><code>DriverManager.getConnection()</code> → <code>Connection</code></td></tr>
+        <tr><td class="c">②</td><td>SQL 준비 (? 바인딩)</td><td><code>PreparedStatement</code></td></tr>
+        <tr><td class="c">③</td><td>실행</td><td><code>executeUpdate()</code> / <code>executeQuery()</code> → <code>ResultSet</code></td></tr>
+        <tr><td class="c">④</td><td>자원 닫기</td><td><code>try-with-resources</code>가 자동 close</td></tr>
+      </table>
+    </div>
+
+    <div class="concept"><h3 class="blk">📖 프로젝트 구조 (역할 분리)</h3>
+      <table>
+        <tr><th>클래스</th><th>역할</th></tr>
+        <tr><td><code>Db</code></td><td>DB 연결(URL/계정)과 테이블 생성</td></tr>
+        <tr><td><code>Account</code></td><td>계좌 데이터 (테이블 한 행에 대응)</td></tr>
+        <tr><td><code>AccountDao</code></td><td>JDBC로 SQL 실행 (INSERT·SELECT·UPDATE·DELETE)</td></tr>
+        <tr><td><code>BankService</code></td><td>업무 로직 + 이체 트랜잭션</td></tr>
+        <tr><td><code>BankApp</code></td><td>콘솔 메뉴 (main) — 메모리 버전과 동일</td></tr>
+      </table>
+      <div class="note"><span class="lbl">💡 핵심</span> — 메모리 버전의 <code>Bank</code>(계좌 보관) 자리가 <code>Db</code> + <code>AccountDao</code>(DB 접근)로 바뀌었을 뿐, <code>Account</code>·<code>BankApp</code>·업무 흐름은 거의 그대로다.</div>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ① Db.java — 연결 &amp; 테이블 생성</div>
+<pre><span class="k">package</span> bank;
+<span class="k">import</span> java.sql.*;
+
+<span class="k">public class</span> <span class="t">Db</span> {
+    <span class="c">// 파일 모드 H2 → 폴더에 bankdb.mv.db 로 저장(데이터 유지)</span>
+    <span class="k">static final</span> <span class="t">String</span> URL = <span class="s">"jdbc:h2:./bankdb"</span>;
+    <span class="k">static final</span> <span class="t">String</span> USER = <span class="s">"sa"</span>;
+    <span class="k">static final</span> <span class="t">String</span> PASSWORD = <span class="s">""</span>;
+
+    <span class="k">public static</span> <span class="t">Connection</span> <span class="f">getConnection</span>() <span class="k">throws</span> <span class="t">SQLException</span> {
+        <span class="k">return</span> <span class="t">DriverManager</span>.<span class="f">getConnection</span>(URL, USER, PASSWORD);
+    }
+
+    <span class="k">public static</span> <span class="k">void</span> <span class="f">init</span>() {
+        <span class="t">String</span> ddl = <span class="s">"""
+            CREATE TABLE IF NOT EXISTS account (
+                id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+                account_number VARCHAR(20) NOT NULL UNIQUE,
+                owner          VARCHAR(50) NOT NULL,
+                balance        BIGINT      NOT NULL
+            )
+            """</span>;
+        <span class="k">try</span> (<span class="t">Connection</span> conn = <span class="f">getConnection</span>();
+             <span class="t">Statement</span> st = conn.<span class="f">createStatement</span>()) {
+            st.<span class="f">execute</span>(ddl);
+        } <span class="k">catch</span> (<span class="t">SQLException</span> e) {
+            <span class="k">throw new</span> <span class="t">RuntimeException</span>(<span class="s">"DB 초기화 실패: "</span> + e.<span class="f">getMessage</span>(), e);
+        }
+    }
+}</pre>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ② AccountDao.java — JDBC CRUD (일부)</div>
+<pre><span class="k">public class</span> <span class="t">AccountDao</span> {
+
+    <span class="c">// 저장 (INSERT) — ? 자리에 값 바인딩(PreparedStatement)</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">insert</span>(<span class="t">Connection</span> conn, <span class="t">Account</span> a) <span class="k">throws</span> <span class="t">SQLException</span> {
+        <span class="t">String</span> sql = <span class="s">"INSERT INTO account(account_number, owner, balance) VALUES(?, ?, ?)"</span>;
+        <span class="k">try</span> (<span class="t">PreparedStatement</span> ps = conn.<span class="f">prepareStatement</span>(sql)) {
+            ps.<span class="f">setString</span>(<span class="n">1</span>, a.<span class="f">getAccountNumber</span>());
+            ps.<span class="f">setString</span>(<span class="n">2</span>, a.<span class="f">getOwner</span>());
+            ps.<span class="f">setLong</span>(<span class="n">3</span>, a.<span class="f">getBalance</span>());
+            ps.<span class="f">executeUpdate</span>();
+        }
+    }
+
+    <span class="c">// 계좌번호로 조회 (SELECT)</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">findByNumber</span>(<span class="t">Connection</span> conn, <span class="t">String</span> no) <span class="k">throws</span> <span class="t">SQLException</span> {
+        <span class="t">String</span> sql = <span class="s">"SELECT * FROM account WHERE account_number = ?"</span>;
+        <span class="k">try</span> (<span class="t">PreparedStatement</span> ps = conn.<span class="f">prepareStatement</span>(sql)) {
+            ps.<span class="f">setString</span>(<span class="n">1</span>, no);
+            <span class="k">try</span> (<span class="t">ResultSet</span> rs = ps.<span class="f">executeQuery</span>()) {
+                <span class="k">if</span> (rs.<span class="f">next</span>()) <span class="k">return</span> <span class="f">map</span>(rs);
+                <span class="k">return</span> <span class="k">null</span>;
+            }
+        }
+    }
+
+    <span class="c">// 잔액 변경 (UPDATE)</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">updateBalance</span>(<span class="t">Connection</span> conn, <span class="t">String</span> no, <span class="k">long</span> balance) <span class="k">throws</span> <span class="t">SQLException</span> {
+        <span class="k">try</span> (<span class="t">PreparedStatement</span> ps =
+                 conn.<span class="f">prepareStatement</span>(<span class="s">"UPDATE account SET balance = ? WHERE account_number = ?"</span>)) {
+            ps.<span class="f">setLong</span>(<span class="n">1</span>, balance);
+            ps.<span class="f">setString</span>(<span class="n">2</span>, no);
+            ps.<span class="f">executeUpdate</span>();
+        }
+    }
+}</pre>
+      <p class="muted" style="margin-top:8px">각 메서드가 <code>Connection</code>을 <b>매개변수로 받는</b> 점에 주목하자. 그래야 이체처럼 여러 SQL을 <b>같은 Connection(하나의 트랜잭션)</b>으로 묶을 수 있다.</p>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ③ BankService.transfer() — 트랜잭션 (핵심)</div>
+<pre><span class="c">// 이체 = 출금 UPDATE + 입금 UPDATE (둘 다 성공해야 함)</span>
+<span class="k">public</span> <span class="k">void</span> <span class="f">transfer</span>(<span class="t">String</span> from, <span class="t">String</span> to, <span class="k">long</span> amount) {
+    <span class="t">Connection</span> conn = <span class="k">null</span>;
+    <span class="k">try</span> {
+        conn = <span class="t">Db</span>.<span class="f">getConnection</span>();
+        conn.<span class="f">setAutoCommit</span>(<span class="k">false</span>);   <span class="c">// ── 트랜잭션 시작 ──</span>
+
+        <span class="t">Account</span> fromA = <span class="f">require</span>(conn, from);
+        <span class="t">Account</span> toA = <span class="f">require</span>(conn, to);
+        <span class="k">if</span> (amount &gt; fromA.<span class="f">getBalance</span>())
+            <span class="k">throw new</span> <span class="t">IllegalStateException</span>(<span class="s">"잔액이 부족합니다. ..."</span>);
+
+        dao.<span class="f">updateBalance</span>(conn, from, fromA.<span class="f">getBalance</span>() - amount);  <span class="c">// 출금</span>
+        dao.<span class="f">updateBalance</span>(conn, to,   toA.<span class="f">getBalance</span>()   + amount);  <span class="c">// 입금</span>
+
+        conn.<span class="f">commit</span>();   <span class="c">// ── 둘 다 성공 → 확정 ──</span>
+    } <span class="k">catch</span> (<span class="t">RuntimeException</span> e) {
+        <span class="f">rollback</span>(conn);   <span class="c">// 잔액부족 등 오류 → 전체 취소(출금도 되돌림)</span>
+        <span class="k">throw</span> e;
+    } <span class="k">catch</span> (<span class="t">SQLException</span> e) {
+        <span class="f">rollback</span>(conn);
+        <span class="k">throw new</span> <span class="t">RuntimeException</span>(<span class="s">"이체 실패: "</span> + e.<span class="f">getMessage</span>(), e);
+    } <span class="k">finally</span> {
+        <span class="f">close</span>(conn);
+    }
+}</pre>
+      <div class="note"><span class="lbl">💡 트랜잭션이 왜 중요한가</span> — 출금은 됐는데 입금 직전에 오류가 나면? <code>rollback()</code>이 <b>출금까지 되돌려서</b> 돈이 사라지는 사고를 막는다. "모두 성공, 아니면 모두 취소(All or Nothing)"가 트랜잭션의 핵심이다. (Spring에서는 이걸 <code>@Transactional</code> 한 줄로 처리한다.)</div>
+    </div>
+
+    <div class="concept"><h3 class="blk">▶ 실행 방법 (H2 드라이버 필요)</h3>
+      <p class="muted">순수 Java 프로젝트라 H2 드라이버 <code>jar</code>가 필요하다. <code>h2-2.2.224.jar</code>를 내려받아 <code>lib/</code> 폴더에 넣는다.<br>다운로드: <code>https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar</code></p>
+<pre><span class="c"># 프로젝트 루트(bank-projects/1b-console-h2)에서</span>
+<span class="c"># Windows</span>
+javac -d out src\bank\*.java
+java -cp "out;lib\h2-2.2.224.jar" bank.BankApp
+
+<span class="c"># Mac / Linux</span>
+javac -d out src/bank/*.java
+java -cp "out:lib/h2-2.2.224.jar" bank.BankApp</pre>
+      <p class="muted">IntelliJ에서는 <code>lib/</code>의 h2 jar를 라이브러리로 추가한 뒤 <code>BankApp</code>을 실행하면 된다.</p>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 실행 예시 — 데이터가 유지된다</div>
+      <div class="out">=== 스페이스시엘 은행 시스템 (콘솔 + H2 DB) ===
+(샘플 계좌 생성: 110-0001 홍길동, 110-0002 김철수)
+----------------------------------------
+1.계좌개설  2.입금  3.출금  4.잔액조회  5.이체  6.전체목록  0.종료
+메뉴 선택 &gt; 2
+계좌번호: 110-0001
+입금액: 50000
+50000원 입금 완료 → [110-0001] 홍길동님 / 잔액: 150,000원
+
+메뉴 선택 &gt; 0
+프로그램을 종료합니다. (데이터는 DB에 저장됨)
+
+<span style="color:#7f9">▶ 다시 실행하면 → 잔액 150,000원이 그대로 남아 있음 (메모리 버전과의 차이!)</span></div>
+    </div>
+
+    <div class="concept"><h3 class="blk">📊 세 버전 한눈에 비교</h3>
+      <table>
+        <tr><th>버전</th><th>저장 위치</th><th>DB 접근</th><th>트랜잭션</th></tr>
+        <tr><td>콘솔 (메모리)</td><td>Map (메모리)</td><td>없음</td><td>—</td></tr>
+        <tr><td><b>콘솔 + H2</b></td><td><b>H2 파일 DB</b></td><td><b>순수 JDBC</b></td><td>수동 <code>commit/rollback</code></td></tr>
+        <tr><td>Spring Boot</td><td>H2 DB</td><td>Spring Data JPA</td><td><code>@Transactional</code></td></tr>
+      </table>
+      <p class="muted">같은 은행 로직이 <b>"저장 방법"만 바뀌며</b> 메모리 → JDBC → JPA로 발전한다. 원리(JDBC)를 이해하면 JPA가 무엇을 자동화해 주는지 분명해진다.</p>
+    </div>
+  </section>
+
+  <footer>은행 계좌 관리 시스템(콘솔) · 학습 교안<br>클래스 · 객체 · 캡슐화 · 컬렉션 · 예외 처리 · JDBC/H2 종합 실습</footer>
+</div>
+</body>
+</html>

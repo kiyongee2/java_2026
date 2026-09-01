@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>은행 계좌 관리 REST API (Spring Boot) — 학습 교안</title>
+<style>
+  :root{--bg:#f4f6f9;--card:#fff;--ink:#1f2933;--muted:#52606d;--line:#e4e7eb;--accent:#6db33f;--accent2:#2c3e50;--code-bg:#282c34;--goal:#eafaf1;--goal-line:#27ae60;--ex:#eef4ff;--ex-line:#5b8def;--lab:#fff5e9;--lab-line:#e76f00;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","맑은 고딕",-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.75;}
+  header.hero{background:linear-gradient(135deg,#6db33f,#2c3e50);color:#fff;padding:52px 24px;text-align:center;}
+  header.hero .eyebrow{letter-spacing:3px;font-size:.78rem;opacity:.9;text-transform:uppercase}
+  header.hero h1{margin:12px 0 8px;font-size:1.9rem}header.hero p{margin:0;opacity:.92}
+  header.hero .tags{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  header.hero .tags span{background:rgba(255,255,255,.16);border-radius:999px;padding:5px 13px;font-size:.82rem}
+  .wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px}
+  nav.toc{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin-bottom:34px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  nav.toc h2{margin:0 0 12px;font-size:1.05rem;color:var(--accent2)}
+  nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:34px}
+  nav.toc a{color:var(--ink);text-decoration:none}nav.toc a:hover{color:var(--accent);text-decoration:underline}
+  section.module{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:26px 30px;margin-bottom:26px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+  section.module > h2{margin:0 0 6px;font-size:1.4rem;color:var(--accent2);display:flex;align-items:center;gap:12px;}
+  section.module > h2 .num{background:var(--accent);color:#fff;font-size:.95rem;font-weight:800;padding:4px 12px;border-radius:10px;min-width:38px;text-align:center;}
+  h3.blk{font-size:1.02rem;margin:22px 0 8px;font-weight:800}
+  .goal{background:var(--goal);border-left:5px solid var(--goal-line);border-radius:0 10px 10px 0;padding:14px 20px;margin:14px 0}
+  .goal .lbl{font-weight:800;color:#1e874b}.goal ul{margin:8px 0 0}
+  .concept{margin:16px 0}
+  .concept h3.blk{color:var(--ink);border-left:4px solid var(--accent);padding-left:10px}
+  .ex{background:var(--ex);border-left:5px solid var(--ex-line);border-radius:0 10px 10px 0;padding:14px 20px;margin:16px 0}
+  .ex .lbl{font-weight:800;color:#2f5fc7}
+  .lab{background:var(--lab);border-left:5px solid var(--lab-line);border-radius:0 10px 10px 0;padding:14px 20px;margin:16px 0}
+  .lab .lbl{font-weight:800;color:#c85f00}.lab h4{margin:6px 0 6px;font-size:.98rem}
+  .note{background:#fffbea;border-left:5px solid #f0c000;border-radius:0 10px 10px 0;padding:12px 18px;margin:14px 0}
+  .note .lbl{font-weight:800;color:#a67c00}
+  ul{margin:8px 0}li{margin:5px 0}.muted{color:var(--muted)}
+  code{background:#eceef1;padding:2px 6px;border-radius:5px;font-size:.92em;font-family:Consolas,"D2Coding",monospace}
+  pre{background:var(--code-bg);color:#abb2bf;border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:Consolas,"D2Coding",monospace;font-size:.9rem;line-height:1.6;margin:10px 0;white-space:pre-wrap;word-break:break-word}
+  pre .k{color:#c678dd}pre .t{color:#e5c07b}pre .s{color:#98c379}pre .c{color:#7f848e;font-style:italic}pre .f{color:#61afef}pre .n{color:#d19a66}pre .g{color:#56b6c2}pre .a{color:#e06c75}
+  .out{background:#1b1e24;color:#9fd18a;border-radius:8px;padding:10px 14px;font-family:Consolas,"D2Coding",monospace;font-size:.86rem;margin:6px 0 0;white-space:pre-wrap}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.93rem}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+  th{background:#f0f4f8;color:var(--accent2)}td.c,th.c{text-align:center}
+  .method{font-weight:800;border-radius:6px;padding:2px 8px;font-size:.82rem;color:#fff}
+  .m-get{background:#2f8f4e}.m-post{background:#d98a00}.m-put{background:#2f5fc7}.m-del{background:#c0392b}
+  figure{margin:14px 0;text-align:center}
+  footer{text-align:center;color:var(--muted);font-size:.85rem;padding:30px 20px}
+  .pill{display:inline-block;background:#eceef1;border-radius:6px;padding:2px 9px;margin:2px;font-size:.85rem}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="eyebrow">Java 웹 &amp; Spring Boot · 종합 실습 · 학습 교안</div>
+  <h1>은행 계좌 관리 REST API</h1>
+  <p>콘솔 은행 예제를 Spring Boot 서버로 확장한다 — 계층형 아키텍처 · JPA · REST</p>
+  <div class="tags"><span>🌱 Spring Boot</span><span>🔗 REST API</span><span>🗄️ Spring Data JPA</span><span>🧩 계층형 구조</span><span>📮 Postman</span></div>
+</header>
+<div class="wrap">
+  <nav class="toc">
+    <h2>📚 학습 목차</h2>
+    <ol>
+      <li><a href="#m1">개요 — 콘솔에서 서버로</a></li>
+      <li><a href="#m2">REST API 설계 (엔드포인트)</a></li>
+      <li><a href="#m3">계층형 클래스 다이어그램</a></li>
+      <li><a href="#m4">프로젝트 의존성 (pom.xml)</a></li>
+      <li><a href="#m5">application.properties</a></li>
+      <li><a href="#m6">Account 엔티티 (@Entity)</a></li>
+      <li><a href="#m7">AccountRepository</a></li>
+      <li><a href="#m8">AccountService (업무 로직)</a></li>
+      <li><a href="#m9">DTO (요청 데이터)</a></li>
+      <li><a href="#m10">AccountController (REST)</a></li>
+      <li><a href="#m11">예외 처리 (Advice)</a></li>
+      <li><a href="#m12">실행 &amp; 테스트 (Postman·curl)</a></li>
+      <li><a href="#m13">실습문제 (확장 과제)</a></li>
+    </ol>
+  </nav>
+
+  <!-- ===================== MODULE 1 ===================== -->
+  <section class="module" id="m1">
+    <h2><span class="num">1</span> 개요 — 콘솔에서 서버로</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>콘솔 프로그램과 웹 서버(REST API)의 차이를 설명할 수 있다.</li>
+      <li>같은 은행 로직이 계층형 구조로 어떻게 재배치되는지 이해한다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 무엇이 달라지는가</h3>
+      <p>앞서 만든 <b>콘솔 은행 예제</b>와 <b>핵심 로직은 똑같다</b>. 계좌 데이터와 입금·출금·이체 규칙은 그대로다. 달라지는 것은 <b>"요청을 어떻게 받고 응답하느냐"</b>와 <b>"데이터를 어디에 저장하느냐"</b> 뿐이다.</p>
+      <table>
+        <tr><th>구분</th><th>콘솔 버전</th><th>Spring Boot REST 버전</th></tr>
+        <tr><td>요청 받는 법</td><td>키보드 입력(Scanner)</td><td>HTTP 요청(URL + JSON)</td></tr>
+        <tr><td>기능 구분</td><td>메뉴 번호 (switch)</td><td>HTTP 메서드 + URL</td></tr>
+        <tr><td>결과 표시</td><td>화면에 println</td><td>JSON 응답</td></tr>
+        <tr><td>데이터 저장</td><td>메모리(Map)</td><td>데이터베이스(JPA + MySQL)</td></tr>
+        <tr><td>사용자</td><td>나 혼자</td><td>여러 앱·웹 동시 접속</td></tr>
+      </table>
+    </div>
+    <div class="concept"><h3 class="blk">📖 계층형 아키텍처 (Layered Architecture)</h3>
+      <p>Spring Boot는 역할을 <b>4개의 계층</b>으로 나눈다. 요청이 위에서 아래로 흐르며, 각 계층은 자기 책임만 수행한다(9장 회원관리 API와 동일한 구조).</p>
+      <table>
+        <tr><th>계층</th><th>클래스</th><th>책임</th></tr>
+        <tr><td>Controller</td><td><code>AccountController</code></td><td>HTTP 요청/응답 처리 (창구)</td></tr>
+        <tr><td>Service</td><td><code>AccountService</code></td><td>업무 로직 (입금·출금·이체, 트랜잭션)</td></tr>
+        <tr><td>Repository</td><td><code>AccountRepository</code></td><td>DB 저장·조회 (SQL 자동 생성)</td></tr>
+        <tr><td>Entity</td><td><code>Account</code></td><td>DB 테이블과 매핑되는 데이터</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 2 ===================== -->
+  <section class="module" id="m2">
+    <h2><span class="num">2</span> REST API 설계 (엔드포인트)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>은행 기능을 HTTP 메서드(GET·POST·PUT·DELETE)와 URL로 표현할 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 은행 기능 → REST 매핑</h3>
+      <p>REST에서는 <b>"자원(URL)"</b>과 <b>"행위(HTTP 메서드)"</b>를 조합한다. 계좌라는 자원을 <code>/accounts</code>로 두고, 무엇을 할지는 메서드로 구분한다.</p>
+      <table>
+        <tr><th>기능</th><th class="c">메서드</th><th>URL</th><th>요청 본문(JSON)</th></tr>
+        <tr><td>계좌 목록 조회</td><td class="c"><span class="method m-get">GET</span></td><td><code>/accounts</code></td><td>-</td></tr>
+        <tr><td>계좌 상세 조회</td><td class="c"><span class="method m-get">GET</span></td><td><code>/accounts/{no}</code></td><td>-</td></tr>
+        <tr><td>계좌 개설</td><td class="c"><span class="method m-post">POST</span></td><td><code>/accounts</code></td><td><code>{owner, initialBalance}</code></td></tr>
+        <tr><td>예금주 변경</td><td class="c"><span class="method m-put">PUT</span></td><td><code>/accounts/{no}</code></td><td><code>{owner}</code></td></tr>
+        <tr><td>계좌 해지</td><td class="c"><span class="method m-del">DELETE</span></td><td><code>/accounts/{no}</code></td><td>-</td></tr>
+        <tr><td>입금</td><td class="c"><span class="method m-post">POST</span></td><td><code>/accounts/{no}/deposit</code></td><td><code>{amount}</code></td></tr>
+        <tr><td>출금</td><td class="c"><span class="method m-post">POST</span></td><td><code>/accounts/{no}/withdraw</code></td><td><code>{amount}</code></td></tr>
+        <tr><td>이체</td><td class="c"><span class="method m-post">POST</span></td><td><code>/accounts/transfer</code></td><td><code>{from, to, amount}</code></td></tr>
+      </table>
+      <div class="note"><span class="lbl">💡 참고</span> — 조회는 <b>GET</b>, 생성은 <b>POST</b>, 전체 수정은 <b>PUT</b>, 삭제는 <b>DELETE</b>가 원칙이다. 입금·출금·이체는 "상태를 바꾸는 행위"라 POST로 두는 것이 자연스럽다.</div>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 3 ===================== -->
+  <section class="module" id="m3">
+    <h2><span class="num">3</span> 계층형 클래스 다이어그램 (UML)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>Controller → Service → Repository → Entity로 이어지는 의존 흐름을 그림으로 이해한다.</li>
+    </ul></div>
+    <div class="concept">
+      <p class="muted">요청은 <code>Controller</code>가 받아 <code>Service</code>에 넘기고, <code>Service</code>는 <code>Repository</code>로 DB를 다루며, <code>Repository</code>는 <code>Account</code> 엔티티를 저장/조회한다. <code>Controller</code>는 <code>DTO</code>로 요청 데이터를 받는다.</p>
+      <figure>
+        <svg id="springuml" style="width:100%;max-width:860px;height:auto;display:block;margin:0 auto" viewBox="0 0 860 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Spring Boot 계층형 클래스 다이어그램">
+          <style>
+            #springuml .cls{fill:#fff;stroke:#6db33f;stroke-width:1.6}
+            #springuml .ent{fill:#fff;stroke:#2c3e50;stroke-width:1.6}
+            #springuml .div{stroke:#6db33f;stroke-width:1.4}
+            #springuml .divE{stroke:#2c3e50;stroke-width:1.4}
+            #springuml .nm{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-weight:700;font-size:16px;fill:#1f2933;text-anchor:middle}
+            #springuml .ster{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:12.5px;fill:#6db33f;text-anchor:middle;font-style:italic}
+            #springuml .sterE{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:12.5px;fill:#2c3e50;text-anchor:middle;font-style:italic}
+            #springuml .mt{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:13.5px;fill:#1f2933;text-anchor:start}
+            #springuml .rel{stroke:#e76f00;stroke-width:1.7;fill:none}
+            #springuml .reldash{stroke:#e76f00;stroke-width:1.7;fill:none;stroke-dasharray:7 4}
+            #springuml .lbl{font-family:"Malgun Gothic","맑은 고딕",sans-serif;font-size:12.5px;fill:#c85f00;text-anchor:middle}
+          </style>
+
+          <!-- Controller -->
+          <rect class="cls" x="255" y="14" width="350" height="96"/>
+          <line class="div" x1="255" y1="66" x2="605" y2="66"/>
+          <text class="ster" x="430" y="34">«@RestController»</text>
+          <text class="nm" x="430" y="56">AccountController</text>
+          <text class="mt" x="270" y="88">+ getAll() / create() / deposit()</text>
+          <text class="mt" x="270" y="104">+ withdraw() / transfer() / delete()</text>
+
+          <!-- Service -->
+          <rect class="cls" x="255" y="176" width="350" height="118"/>
+          <line class="div" x1="255" y1="228" x2="605" y2="228"/>
+          <text class="ster" x="430" y="196">«@Service»</text>
+          <text class="nm" x="430" y="218">AccountService</text>
+          <text class="mt" x="270" y="250">+ createAccount(owner, init) : Account</text>
+          <text class="mt" x="270" y="270">+ deposit / withdraw(no, amount)</text>
+          <text class="mt" x="270" y="290">+ transfer(from, to, amount)  «@Transactional»</text>
+
+          <!-- Repository -->
+          <rect class="cls" x="255" y="360" width="350" height="96"/>
+          <line class="div" x1="255" y1="412" x2="605" y2="412"/>
+          <text class="ster" x="430" y="380">«interface · JpaRepository»</text>
+          <text class="nm" x="430" y="402">AccountRepository</text>
+          <text class="mt" x="270" y="434">+ findByAccountNumber(no) : Optional</text>
+          <text class="mt" x="270" y="450">+ save() / findAll() / delete() (자동 제공)</text>
+
+          <!-- Entity -->
+          <rect class="ent" x="255" y="520" width="350" height="106"/>
+          <line class="divE" x1="255" y1="572" x2="605" y2="572"/>
+          <text class="sterE" x="430" y="540">«@Entity»</text>
+          <text class="nm" x="430" y="562">Account</text>
+          <text class="mt" x="270" y="594">- id : Long   - accountNumber : String</text>
+          <text class="mt" x="270" y="610">- owner : String   - balance : long</text>
+
+          <!-- DTO (side) -->
+          <rect class="cls" x="655" y="14" width="190" height="140"/>
+          <line class="div" x1="655" y1="42" x2="845" y2="42"/>
+          <text class="nm" x="750" y="34">DTO</text>
+          <text class="mt" x="668" y="66">CreateAccountRequest</text>
+          <text class="mt" x="668" y="88">AmountRequest</text>
+          <text class="mt" x="668" y="110">TransferRequest</text>
+          <text class="mt" x="668" y="132">OwnerRequest</text>
+
+          <!-- 의존 화살표 (점선, 아래로) -->
+          <line class="reldash" x1="430" y1="110" x2="430" y2="176"/>
+          <polyline class="rel" points="421,164 430,176 439,164"/>
+          <text class="lbl" x="472" y="147">호출</text>
+
+          <line class="reldash" x1="430" y1="294" x2="430" y2="360"/>
+          <polyline class="rel" points="421,348 430,360 439,348"/>
+          <text class="lbl" x="472" y="331">호출</text>
+
+          <line class="reldash" x1="430" y1="456" x2="430" y2="520"/>
+          <polyline class="rel" points="421,508 430,520 439,508"/>
+          <text class="lbl" x="482" y="491">저장/조회</text>
+
+          <!-- Controller → DTO -->
+          <line class="reldash" x1="605" y1="70" x2="655" y2="70"/>
+          <polyline class="rel" points="643,61 655,70 643,79"/>
+          <text class="lbl" x="628" y="56">사용</text>
+        </svg>
+        <figcaption class="muted">UML — 점선 화살표(⇢)는 "위 계층이 아래 계층을 <b>사용(의존)</b>한다". 요청은 위(Controller)에서 아래(Entity/DB)로 흐른다. Spring이 각 객체를 만들어 자동으로 연결(<b>의존성 주입, DI</b>)해 준다.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 4 ===================== -->
+  <section class="module" id="m4">
+    <h2><span class="num">4</span> 프로젝트 의존성 (pom.xml)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>REST API + JPA + DB에 필요한 스타터 의존성을 이해한다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 Spring Initializr 선택 항목</h3>
+      <p>9장에서처럼 <a href="https://start.spring.io">start.spring.io</a>에서 프로젝트를 생성한다. 은행 API에 필요한 의존성:</p>
+      <ul>
+        <li><b>Spring Web</b> — REST API(@RestController), 내장 톰캣</li>
+        <li><b>Spring Data JPA</b> — DB를 객체로 다루기(Repository)</li>
+        <li><b>MySQL Driver</b> — MySQL 연결 (또는 학습용 H2 Database)</li>
+      </ul>
+    </div>
+    <div class="ex"><div class="lbl">💡 pom.xml — 핵심 의존성</div>
+<pre><span class="g">&lt;dependencies&gt;</span>
+    <span class="c">&lt;!-- REST API (@RestController, 내장 톰캣) --&gt;</span>
+    <span class="g">&lt;dependency&gt;</span>
+        <span class="g">&lt;groupId&gt;</span>org.springframework.boot<span class="g">&lt;/groupId&gt;</span>
+        <span class="g">&lt;artifactId&gt;</span>spring-boot-starter-web<span class="g">&lt;/artifactId&gt;</span>
+    <span class="g">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- Spring Data JPA (Repository) --&gt;</span>
+    <span class="g">&lt;dependency&gt;</span>
+        <span class="g">&lt;groupId&gt;</span>org.springframework.boot<span class="g">&lt;/groupId&gt;</span>
+        <span class="g">&lt;artifactId&gt;</span>spring-boot-starter-data-jpa<span class="g">&lt;/artifactId&gt;</span>
+    <span class="g">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- MySQL 드라이버 --&gt;</span>
+    <span class="g">&lt;dependency&gt;</span>
+        <span class="g">&lt;groupId&gt;</span>com.mysql<span class="g">&lt;/groupId&gt;</span>
+        <span class="g">&lt;artifactId&gt;</span>mysql-connector-j<span class="g">&lt;/artifactId&gt;</span>
+        <span class="g">&lt;scope&gt;</span>runtime<span class="g">&lt;/scope&gt;</span>
+    <span class="g">&lt;/dependency&gt;</span>
+<span class="g">&lt;/dependencies&gt;</span></pre>
+      <div class="note"><span class="lbl">💡 DB 설치 없이 바로 실행하려면</span> — MySQL 대신 <b>H2(메모리 DB)</b>를 쓰면 설치·설정 없이 실행된다. <code>mysql-connector-j</code> 자리에 <code>com.h2database:h2</code>(scope: runtime)를 넣으면 된다.</div>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 5 ===================== -->
+  <section class="module" id="m5">
+    <h2><span class="num">5</span> application.properties</h2>
+    <div class="concept"><h3 class="blk">📖 DB 연결 &amp; JPA 설정</h3>
+      <p>9장에서 만든 <code>bootuser</code> 계정으로 MySQL에 연결한다. 데이터베이스 <code>bankdb</code>를 미리 생성해 둔다.</p>
+    </div>
+    <div class="ex"><div class="lbl">💡 application.properties (MySQL)</div>
+<pre><span class="c"># 서버 포트</span>
+server.port=<span class="n">8080</span>
+
+<span class="c"># MySQL 연결 (bootuser 계정 사용)</span>
+spring.datasource.url=jdbc:mysql://localhost:3306/bankdb
+spring.datasource.username=bootuser
+spring.datasource.password=<span class="n">1234</span>
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+<span class="c"># JPA / Hibernate</span>
+spring.jpa.hibernate.ddl-auto=update    <span class="c"># 엔티티에 맞춰 테이블 자동 생성/수정</span>
+spring.jpa.show-sql=<span class="k">true</span>              <span class="c"># 실행되는 SQL을 콘솔에 출력(학습용)</span>
+spring.jpa.properties.hibernate.format_sql=<span class="k">true</span>
+
+<span class="c"># 한글 응답 인코딩</span>
+server.servlet.encoding.charset=UTF-8
+server.servlet.encoding.force=<span class="k">true</span></pre>
+      <div class="note"><span class="lbl">💡 H2로 실행할 때</span>
+<pre><span class="c"># H2 메모리 DB — 설치 불필요, 서버 끄면 데이터 사라짐</span>
+spring.datasource.url=jdbc:h2:mem:bankdb
+spring.datasource.driver-class-name=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.hibernate.ddl-auto=update
+spring.h2.console.enabled=<span class="k">true</span>   <span class="c"># /h2-console 로 DB 확인 가능</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 6 ===================== -->
+  <section class="module" id="m6">
+    <h2><span class="num">6</span> Account 엔티티 (@Entity)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li><code>@Entity</code>로 클래스를 DB 테이블과 매핑할 수 있다.</li>
+      <li>업무 규칙(입금·출금)을 엔티티 안에 두어 데이터를 보호한다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <ul>
+        <li><code>@Entity</code>를 붙이면 이 클래스가 DB의 <b>account 테이블</b>이 되고, 필드가 컬럼이 된다.</li>
+        <li><code>@Id</code> + <code>@GeneratedValue</code>로 기본키(id)를 DB가 자동 증가시킨다.</li>
+        <li>콘솔 버전의 <code>Account</code>와 필드·규칙이 거의 같다. JPA용으로 기본 생성자와 id만 추가됐다.</li>
+      </ul>
+    </div>
+    <div class="ex"><div class="lbl">💡 Account.java — 엔티티</div>
+<pre><span class="k">package</span> com.example.bank.entity;
+
+<span class="k">import</span> jakarta.persistence.*;
+
+<span class="a">@Entity</span>                       <span class="c">// 이 클래스를 DB 테이블로 매핑</span>
+<span class="k">public class</span> <span class="t">Account</span> {
+
+    <span class="a">@Id</span>
+    <span class="a">@GeneratedValue</span>(strategy = <span class="t">GenerationType</span>.IDENTITY)  <span class="c">// PK 자동 증가</span>
+    <span class="k">private</span> <span class="t">Long</span> id;
+
+    <span class="a">@Column</span>(nullable = <span class="k">false</span>, unique = <span class="k">true</span>)
+    <span class="k">private</span> <span class="t">String</span> accountNumber;   <span class="c">// 계좌번호 (중복 불가)</span>
+
+    <span class="k">private</span> <span class="t">String</span> owner;           <span class="c">// 예금주</span>
+    <span class="k">private</span> <span class="k">long</span> balance;           <span class="c">// 잔액</span>
+
+    <span class="k">protected</span> <span class="f">Account</span>() {}       <span class="c">// JPA가 요구하는 기본 생성자</span>
+
+    <span class="k">public</span> <span class="f">Account</span>(<span class="t">String</span> accountNumber, <span class="t">String</span> owner, <span class="k">long</span> initialBalance) {
+        <span class="k">this</span>.accountNumber = accountNumber;
+        <span class="k">this</span>.owner = owner;
+        <span class="k">this</span>.balance = initialBalance;
+    }
+
+    <span class="c">// 입금 — 규칙 검사는 엔티티가 스스로 한다(캡슐화)</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">deposit</span>(<span class="k">long</span> amount) {
+        <span class="k">if</span> (amount &lt;= <span class="n">0</span>)
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"입금액은 0보다 커야 합니다."</span>);
+        <span class="k">this</span>.balance += amount;
+    }
+
+    <span class="c">// 출금 — 잔액 부족 시 예외</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">withdraw</span>(<span class="k">long</span> amount) {
+        <span class="k">if</span> (amount &lt;= <span class="n">0</span>)
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"출금액은 0보다 커야 합니다."</span>);
+        <span class="k">if</span> (amount &gt; <span class="k">this</span>.balance)
+            <span class="k">throw new</span> <span class="t">IllegalStateException</span>(<span class="s">"잔액이 부족합니다. (현재 잔액: "</span> + balance + <span class="s">"원)"</span>);
+        <span class="k">this</span>.balance -= amount;
+    }
+
+    <span class="k">public</span> <span class="k">void</span> <span class="f">changeOwner</span>(<span class="t">String</span> owner) { <span class="k">this</span>.owner = owner; }
+
+    <span class="c">// Getter (JSON 응답 변환에 사용)</span>
+    <span class="k">public</span> <span class="t">Long</span> <span class="f">getId</span>() { <span class="k">return</span> id; }
+    <span class="k">public</span> <span class="t">String</span> <span class="f">getAccountNumber</span>() { <span class="k">return</span> accountNumber; }
+    <span class="k">public</span> <span class="t">String</span> <span class="f">getOwner</span>() { <span class="k">return</span> owner; }
+    <span class="k">public</span> <span class="k">long</span> <span class="f">getBalance</span>() { <span class="k">return</span> balance; }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 7 ===================== -->
+  <section class="module" id="m7">
+    <h2><span class="num">7</span> AccountRepository</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li><code>JpaRepository</code>를 상속하면 CRUD 메서드가 자동 제공됨을 이해한다.</li>
+      <li>메서드 이름 규칙으로 조회 쿼리를 자동 생성할 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <p><code>JpaRepository&lt;Account, Long&gt;</code>를 상속하는 <b>인터페이스</b>만 만들면, <code>save()</code>·<code>findAll()</code>·<code>findById()</code>·<code>delete()</code> 같은 메서드를 Spring이 <b>자동 구현</b>해 준다. 우리가 SQL을 직접 쓸 필요가 없다.</p>
+    </div>
+    <div class="ex"><div class="lbl">💡 AccountRepository.java</div>
+<pre><span class="k">package</span> com.example.bank.repository;
+
+<span class="k">import</span> com.example.bank.entity.Account;
+<span class="k">import</span> org.springframework.data.jpa.repository.JpaRepository;
+<span class="k">import</span> java.util.Optional;
+
+<span class="c">// JpaRepository&lt;엔티티, 기본키타입&gt; 상속 → CRUD 자동 제공</span>
+<span class="k">public interface</span> <span class="t">AccountRepository</span> <span class="k">extends</span> <span class="t">JpaRepository</span>&lt;<span class="t">Account</span>, <span class="t">Long</span>&gt; {
+
+    <span class="c">// 메서드 이름 규칙 → "계좌번호로 조회" 쿼리 자동 생성</span>
+    <span class="t">Optional</span>&lt;<span class="t">Account</span>&gt; <span class="f">findByAccountNumber</span>(<span class="t">String</span> accountNumber);
+
+    <span class="c">// 계좌번호 존재 여부 확인</span>
+    <span class="k">boolean</span> <span class="f">existsByAccountNumber</span>(<span class="t">String</span> accountNumber);
+}</pre>
+      <p class="muted" style="margin-top:8px"><code>findByAccountNumber</code>라고 이름만 지으면, Spring이 <code>SELECT * FROM account WHERE account_number = ?</code>를 자동으로 만들어 실행한다. 이것이 Spring Data JPA의 강력함이다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 8 ===================== -->
+  <section class="module" id="m8">
+    <h2><span class="num">8</span> AccountService (업무 로직)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>업무 로직을 Service 계층에 모으고, <code>@Transactional</code>로 안전하게 처리한다.</li>
+      <li>이체처럼 여러 DB 작업을 하나의 트랜잭션으로 묶는 이유를 이해한다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <ul>
+        <li><code>@Service</code>를 붙이면 Spring이 객체를 만들어 Controller에 넣어준다(<b>DI</b>).</li>
+        <li><b>이체</b>는 "출금 → 입금" 두 작업이다. 중간에 오류가 나면 <b>둘 다 취소</b>돼야 한다. <code>@Transactional</code>이 이를 보장한다(출금만 되고 입금이 안 되는 사고 방지).</li>
+      </ul>
+    </div>
+    <div class="ex"><div class="lbl">💡 AccountService.java</div>
+<pre><span class="k">package</span> com.example.bank.service;
+
+<span class="k">import</span> com.example.bank.entity.Account;
+<span class="k">import</span> com.example.bank.repository.AccountRepository;
+<span class="k">import</span> org.springframework.stereotype.Service;
+<span class="k">import</span> org.springframework.transaction.annotation.Transactional;
+<span class="k">import</span> java.util.List;
+
+<span class="a">@Service</span>
+<span class="k">public class</span> <span class="t">AccountService</span> {
+
+    <span class="k">private final</span> <span class="t">AccountRepository</span> repository;
+
+    <span class="c">// 생성자 주입(DI) — Spring이 Repository를 넣어준다</span>
+    <span class="k">public</span> <span class="f">AccountService</span>(<span class="t">AccountRepository</span> repository) {
+        <span class="k">this</span>.repository = repository;
+    }
+
+    <span class="c">// 계좌 개설 — 계좌번호 자동 생성 후 저장</span>
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">createAccount</span>(<span class="t">String</span> owner, <span class="k">long</span> initialBalance) {
+        <span class="k">if</span> (owner == <span class="k">null</span> || owner.<span class="f">isBlank</span>())
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"예금주 이름을 입력해야 합니다."</span>);
+        <span class="k">long</span> seq = repository.<span class="f">count</span>() + <span class="n">1</span>;
+        <span class="t">String</span> accountNumber = <span class="t">String</span>.<span class="f">format</span>(<span class="s">"110-%04d"</span>, seq);
+        <span class="k">return</span> repository.<span class="f">save</span>(<span class="k">new</span> <span class="t">Account</span>(accountNumber, owner, initialBalance));
+    }
+
+    <span class="a">@Transactional</span>(readOnly = <span class="k">true</span>)
+    <span class="k">public</span> <span class="t">List</span>&lt;<span class="t">Account</span>&gt; <span class="f">getAllAccounts</span>() {
+        <span class="k">return</span> repository.<span class="f">findAll</span>();
+    }
+
+    <span class="a">@Transactional</span>(readOnly = <span class="k">true</span>)
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">getAccount</span>(<span class="t">String</span> accountNumber) {
+        <span class="k">return</span> repository.<span class="f">findByAccountNumber</span>(accountNumber)
+                .<span class="f">orElseThrow</span>(() -&gt; <span class="k">new</span> <span class="t">IllegalArgumentException</span>(
+                        <span class="s">"존재하지 않는 계좌입니다: "</span> + accountNumber));
+    }
+
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">deposit</span>(<span class="t">String</span> accountNumber, <span class="k">long</span> amount) {
+        <span class="t">Account</span> account = <span class="f">getAccount</span>(accountNumber);
+        account.<span class="f">deposit</span>(amount);   <span class="c">// 변경 → 트랜잭션 종료 시 자동 반영(dirty checking)</span>
+        <span class="k">return</span> account;
+    }
+
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">withdraw</span>(<span class="t">String</span> accountNumber, <span class="k">long</span> amount) {
+        <span class="t">Account</span> account = <span class="f">getAccount</span>(accountNumber);
+        account.<span class="f">withdraw</span>(amount);
+        <span class="k">return</span> account;
+    }
+
+    <span class="c">// 이체 — 출금·입금을 하나의 트랜잭션으로 (실패 시 전체 롤백)</span>
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">transfer</span>(<span class="t">String</span> from, <span class="t">String</span> to, <span class="k">long</span> amount) {
+        <span class="k">if</span> (from.<span class="f">equals</span>(to))
+            <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"같은 계좌로는 이체할 수 없습니다."</span>);
+        <span class="t">Account</span> fromAcc = <span class="f">getAccount</span>(from);
+        <span class="t">Account</span> toAcc = <span class="f">getAccount</span>(to);
+        fromAcc.<span class="f">withdraw</span>(amount);   <span class="c">// 실패하면 예외 → 아래 입금은 실행 안 되고 롤백</span>
+        toAcc.<span class="f">deposit</span>(amount);
+    }
+
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">changeOwner</span>(<span class="t">String</span> accountNumber, <span class="t">String</span> newOwner) {
+        <span class="t">Account</span> account = <span class="f">getAccount</span>(accountNumber);
+        account.<span class="f">changeOwner</span>(newOwner);
+        <span class="k">return</span> account;
+    }
+
+    <span class="a">@Transactional</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="f">closeAccount</span>(<span class="t">String</span> accountNumber) {
+        <span class="t">Account</span> account = <span class="f">getAccount</span>(accountNumber);
+        repository.<span class="f">delete</span>(account);
+    }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 9 ===================== -->
+  <section class="module" id="m9">
+    <h2><span class="num">9</span> DTO (요청 데이터)</h2>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <p>클라이언트가 보낸 JSON을 담을 그릇이 <b>DTO</b>(Data Transfer Object)다. 예: <code>{"amount":50000}</code> → <code>AmountRequest</code> 객체로 자동 변환된다. (자바 <b>record</b>를 쓰면 아주 간결하다.)</p>
+    </div>
+    <div class="ex"><div class="lbl">💡 DTO — record로 간결하게</div>
+<pre><span class="k">package</span> com.example.bank.dto;
+
+<span class="c">// 입금/출금 요청 : {"amount": 50000}</span>
+<span class="k">public record</span> <span class="t">AmountRequest</span>(<span class="k">long</span> amount) {}
+
+<span class="c">// 계좌 개설 요청 : {"owner":"이영희", "initialBalance":30000}</span>
+<span class="k">public record</span> <span class="t">CreateAccountRequest</span>(<span class="t">String</span> owner, <span class="k">long</span> initialBalance) {}
+
+<span class="c">// 이체 요청 : {"from":"110-0001", "to":"110-0002", "amount":30000}</span>
+<span class="k">public record</span> <span class="t">TransferRequest</span>(<span class="t">String</span> from, <span class="t">String</span> to, <span class="k">long</span> amount) {}
+
+<span class="c">// 예금주 변경 요청 : {"owner":"김철수"}</span>
+<span class="k">public record</span> <span class="t">OwnerRequest</span>(<span class="t">String</span> owner) {}</pre>
+      <div class="note"><span class="lbl">💡 참고</span> — <code>record</code>는 필드·생성자·getter를 자동으로 만들어 주는 자바 문법이다. 일반 클래스로 만들어도 되지만 DTO에는 record가 편하다.</div>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 10 ===================== -->
+  <section class="module" id="m10">
+    <h2><span class="num">10</span> AccountController (REST)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>HTTP 메서드별 매핑 애너테이션으로 REST 엔드포인트를 만들 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <p>콘솔의 "메뉴 switch"가 여기서는 <code>@GetMapping</code>·<code>@PostMapping</code>·<code>@PutMapping</code>·<code>@DeleteMapping</code>으로 바뀐다. 각 메서드가 하나의 URL 요청을 처리하고 결과를 JSON으로 돌려준다.</p>
+    </div>
+    <div class="ex"><div class="lbl">💡 AccountController.java</div>
+<pre><span class="k">package</span> com.example.bank.controller;
+
+<span class="k">import</span> com.example.bank.dto.*;
+<span class="k">import</span> com.example.bank.entity.Account;
+<span class="k">import</span> com.example.bank.service.AccountService;
+<span class="k">import</span> org.springframework.web.bind.annotation.*;
+<span class="k">import</span> java.util.List;
+<span class="k">import</span> java.util.Map;
+
+<span class="a">@RestController</span>
+<span class="a">@RequestMapping</span>(<span class="s">"/accounts"</span>)   <span class="c">// 모든 URL이 /accounts 로 시작</span>
+<span class="k">public class</span> <span class="t">AccountController</span> {
+
+    <span class="k">private final</span> <span class="t">AccountService</span> service;
+
+    <span class="k">public</span> <span class="f">AccountController</span>(<span class="t">AccountService</span> service) {
+        <span class="k">this</span>.service = service;
+    }
+
+    <span class="c">// 계좌 목록 → GET /accounts</span>
+    <span class="a">@GetMapping</span>
+    <span class="k">public</span> <span class="t">List</span>&lt;<span class="t">Account</span>&gt; <span class="f">getAll</span>() {
+        <span class="k">return</span> service.<span class="f">getAllAccounts</span>();
+    }
+
+    <span class="c">// 계좌 조회 → GET /accounts/110-0001</span>
+    <span class="a">@GetMapping</span>(<span class="s">"/{no}"</span>)
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">getOne</span>(<span class="a">@PathVariable</span> <span class="t">String</span> no) {
+        <span class="k">return</span> service.<span class="f">getAccount</span>(no);
+    }
+
+    <span class="c">// 계좌 개설 → POST /accounts</span>
+    <span class="a">@PostMapping</span>
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">create</span>(<span class="a">@RequestBody</span> <span class="t">CreateAccountRequest</span> req) {
+        <span class="k">return</span> service.<span class="f">createAccount</span>(req.<span class="f">owner</span>(), req.<span class="f">initialBalance</span>());
+    }
+
+    <span class="c">// 입금 → POST /accounts/110-0001/deposit</span>
+    <span class="a">@PostMapping</span>(<span class="s">"/{no}/deposit"</span>)
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">deposit</span>(<span class="a">@PathVariable</span> <span class="t">String</span> no, <span class="a">@RequestBody</span> <span class="t">AmountRequest</span> req) {
+        <span class="k">return</span> service.<span class="f">deposit</span>(no, req.<span class="f">amount</span>());
+    }
+
+    <span class="c">// 출금 → POST /accounts/110-0001/withdraw</span>
+    <span class="a">@PostMapping</span>(<span class="s">"/{no}/withdraw"</span>)
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">withdraw</span>(<span class="a">@PathVariable</span> <span class="t">String</span> no, <span class="a">@RequestBody</span> <span class="t">AmountRequest</span> req) {
+        <span class="k">return</span> service.<span class="f">withdraw</span>(no, req.<span class="f">amount</span>());
+    }
+
+    <span class="c">// 이체 → POST /accounts/transfer</span>
+    <span class="a">@PostMapping</span>(<span class="s">"/transfer"</span>)
+    <span class="k">public</span> <span class="t">Map</span>&lt;<span class="t">String</span>, <span class="t">Object</span>&gt; <span class="f">transfer</span>(<span class="a">@RequestBody</span> <span class="t">TransferRequest</span> req) {
+        service.<span class="f">transfer</span>(req.<span class="f">from</span>(), req.<span class="f">to</span>(), req.<span class="f">amount</span>());
+        <span class="k">return</span> <span class="t">Map</span>.<span class="f">of</span>(<span class="s">"message"</span>, <span class="s">"이체 완료"</span>,
+                      <span class="s">"from"</span>, service.<span class="f">getAccount</span>(req.<span class="f">from</span>()),
+                      <span class="s">"to"</span>, service.<span class="f">getAccount</span>(req.<span class="f">to</span>()));
+    }
+
+    <span class="c">// 예금주 변경 → PUT /accounts/110-0001</span>
+    <span class="a">@PutMapping</span>(<span class="s">"/{no}"</span>)
+    <span class="k">public</span> <span class="t">Account</span> <span class="f">changeOwner</span>(<span class="a">@PathVariable</span> <span class="t">String</span> no, <span class="a">@RequestBody</span> <span class="t">OwnerRequest</span> req) {
+        <span class="k">return</span> service.<span class="f">changeOwner</span>(no, req.<span class="f">owner</span>());
+    }
+
+    <span class="c">// 계좌 해지 → DELETE /accounts/110-0001</span>
+    <span class="a">@DeleteMapping</span>(<span class="s">"/{no}"</span>)
+    <span class="k">public</span> <span class="t">Map</span>&lt;<span class="t">String</span>, <span class="t">String</span>&gt; <span class="f">close</span>(<span class="a">@PathVariable</span> <span class="t">String</span> no) {
+        service.<span class="f">closeAccount</span>(no);
+        <span class="k">return</span> <span class="t">Map</span>.<span class="f">of</span>(<span class="s">"message"</span>, no + <span class="s">" 계좌가 해지되었습니다."</span>);
+    }
+}</pre>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 11 ===================== -->
+  <section class="module" id="m11">
+    <h2><span class="num">11</span> 예외 처리 (@RestControllerAdvice)</h2>
+    <div class="concept"><h3 class="blk">📖 개념 및 설명</h3>
+      <p>콘솔에서는 <code>try-catch</code>로 <code>[오류]</code>를 출력했다. 서버에서는 예외를 <b>한곳에서</b> 잡아, 알맞은 HTTP 상태코드(400)와 JSON 메시지로 돌려준다.</p>
+    </div>
+    <div class="ex"><div class="lbl">💡 GlobalExceptionHandler.java</div>
+<pre><span class="k">package</span> com.example.bank.controller;
+
+<span class="k">import</span> org.springframework.http.HttpStatus;
+<span class="k">import</span> org.springframework.http.ResponseEntity;
+<span class="k">import</span> org.springframework.web.bind.annotation.*;
+<span class="k">import</span> java.util.Map;
+
+<span class="a">@RestControllerAdvice</span>   <span class="c">// 모든 컨트롤러의 예외를 여기서 처리</span>
+<span class="k">public class</span> <span class="t">GlobalExceptionHandler</span> {
+
+    <span class="a">@ExceptionHandler</span>({<span class="t">IllegalArgumentException</span>.<span class="k">class</span>, <span class="t">IllegalStateException</span>.<span class="k">class</span>})
+    <span class="k">public</span> <span class="t">ResponseEntity</span>&lt;<span class="t">Map</span>&lt;<span class="t">String</span>, <span class="t">String</span>&gt;&gt; <span class="f">handle</span>(<span class="t">RuntimeException</span> e) {
+        <span class="k">return</span> <span class="t">ResponseEntity</span>
+                .<span class="f">status</span>(<span class="t">HttpStatus</span>.BAD_REQUEST)   <span class="c">// 400</span>
+                .<span class="f">body</span>(<span class="t">Map</span>.<span class="f">of</span>(<span class="s">"error"</span>, e.<span class="f">getMessage</span>()));
+    }
+}</pre>
+      <p class="muted" style="margin-top:8px">이제 잔액 부족으로 출금을 시도하면 <code>400 Bad Request</code>와 함께 <code>{"error":"잔액이 부족합니다..."}</code>가 반환된다.</p>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 12 ===================== -->
+  <section class="module" id="m12">
+    <h2><span class="num">12</span> 실행 &amp; 테스트 (Postman·curl)</h2>
+    <div class="goal"><div class="lbl">🎯 학습목표</div><ul>
+      <li>Postman 또는 curl로 REST API를 호출하고 JSON 응답을 확인할 수 있다.</li>
+    </ul></div>
+    <div class="concept"><h3 class="blk">▶ 실행</h3>
+      <p>IntelliJ에서 <code>BankApplication</code>을 실행하거나 터미널에서 <code>mvn spring-boot:run</code>. 서버가 뜨면 <code>http://localhost:8080</code>에서 요청을 받는다. 9장에서 쓴 <b>Postman</b>으로 테스트한다.</p>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ① 계좌 개설 — <span class="method m-post">POST</span> /accounts</div>
+<pre><span class="c"># 요청 (Body → raw → JSON)</span>
+POST http://localhost:8080/accounts
+{
+  <span class="s">"owner"</span>: <span class="s">"홍길동"</span>,
+  <span class="s">"initialBalance"</span>: <span class="n">100000</span>
+}</pre>
+      <div class="out">{
+  "id": 1,
+  "accountNumber": "110-0001",
+  "owner": "홍길동",
+  "balance": 100000
+}</div>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ② 입금 — <span class="method m-post">POST</span> /accounts/110-0001/deposit</div>
+<pre>POST http://localhost:8080/accounts/110-0001/deposit
+{ <span class="s">"amount"</span>: <span class="n">50000</span> }</pre>
+      <div class="out">{ "id":1, "accountNumber":"110-0001", "owner":"홍길동", "balance":150000 }</div>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ③ 이체 — <span class="method m-post">POST</span> /accounts/transfer</div>
+<pre>POST http://localhost:8080/accounts/transfer
+{ <span class="s">"from"</span>:<span class="s">"110-0001"</span>, <span class="s">"to"</span>:<span class="s">"110-0002"</span>, <span class="s">"amount"</span>:<span class="n">30000</span> }</pre>
+      <div class="out">{
+  "message": "이체 완료",
+  "from": { "accountNumber":"110-0001", "owner":"홍길동", "balance":120000 },
+  "to":   { "accountNumber":"110-0002", "owner":"김철수", "balance":80000 }
+}</div>
+    </div>
+
+    <div class="ex"><div class="lbl">💡 ④ 잔액 부족 출금 (에러) — <span class="method m-post">POST</span> /accounts/110-0002/withdraw</div>
+<pre>POST http://localhost:8080/accounts/110-0002/withdraw
+{ <span class="s">"amount"</span>: <span class="n">99999999</span> }</pre>
+      <div class="out" style="color:#ff9b9b">HTTP 400 Bad Request
+{ "error": "잔액이 부족합니다. (현재 잔액: 80000원)" }</div>
+    </div>
+
+    <div class="concept"><h3 class="blk">📖 터미널(curl)로도 가능</h3>
+<pre><span class="c"># 전체 계좌 목록</span>
+curl http://localhost:8080/accounts
+
+<span class="c"># 입금</span>
+curl -X POST http://localhost:8080/accounts/110-0001/deposit \
+     -H <span class="s">"Content-Type: application/json"</span> -d <span class="s">'{"amount":50000}'</span>
+
+<span class="c"># 계좌 해지</span>
+curl -X DELETE http://localhost:8080/accounts/110-0002</pre>
+    </div>
+    <div class="concept"><h3 class="blk">📁 완성 프로젝트 (H2, 바로 실행) · 폴더 구조</h3>
+      <p class="muted">아래 완성 소스는 <code>bank-projects/2-spring-boot</code> 폴더에 저장되어 있습니다. H2 메모리 DB라 <b>DB 설치 없이 바로 실행</b>되고, 실행 즉시 샘플 계좌가 생성됩니다.</p>
+<pre>bank-projects/2-spring-boot/
+├─ pom.xml                              <span class="c"># web + data-jpa + H2</span>
+├─ http/requests.http                   <span class="c"># 테스트 요청 모음</span>
+└─ src/main/
+   ├─ resources/application.properties  <span class="c"># H2 설정</span>
+   └─ java/com/example/bank/
+      ├─ BankApplication.java                 <span class="c"># main</span>
+      ├─ entity/Account.java                  <span class="c"># @Entity</span>
+      ├─ repository/AccountRepository.java    <span class="c"># JpaRepository</span>
+      ├─ service/AccountService.java          <span class="c"># @Service, @Transactional</span>
+      ├─ controller/AccountController.java    <span class="c"># @RestController</span>
+      ├─ controller/GlobalExceptionHandler.java
+      ├─ dto/                                 <span class="c"># record 4개 (요청 DTO)</span>
+      └─ config/DataInitializer.java          <span class="c"># 샘플 계좌 자동 생성</span></pre>
+      <div class="note"><span class="lbl">▶ 바로 실행</span>
+<pre>cd bank-projects/2-spring-boot
+mvn spring-boot:run
+
+<span class="c"># 서버      : http://localhost:8080/accounts</span>
+<span class="c"># H2 콘솔   : http://localhost:8080/h2-console  (JDBC URL: jdbc:h2:mem:bankdb, 사용자 sa)</span>
+<span class="c"># 자동 계좌 : 110-0001(홍길동 10만원), 110-0002(김철수 5만원)</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== MODULE 13 ===================== -->
+  <section class="module" id="m13">
+    <h2><span class="num">13</span> 실습문제 (확장 과제)</h2>
+    <div class="lab"><div class="lbl">✏️ 실습문제</div>
+      <h4>실습 1. 거래 내역 엔티티 추가</h4>
+      <p><code>Transaction</code> 엔티티(입출금 기록: 타입·금액·시각·계좌)를 만들고, <code>Account</code>와 <b>1:N 연관관계</b>(<code>@OneToMany</code> / <code>@ManyToOne</code>)로 매핑하세요. 입금·출금·이체 때마다 기록을 남기고, <code>GET /accounts/{no}/transactions</code>로 조회하는 API를 추가합니다.</p>
+      <details><summary>힌트 보기</summary>
+<pre><span class="a">@Entity</span>
+<span class="k">public class</span> <span class="t">Transaction</span> {
+    <span class="a">@Id</span> <span class="a">@GeneratedValue</span>(strategy = <span class="t">GenerationType</span>.IDENTITY)
+    <span class="k">private</span> <span class="t">Long</span> id;
+    <span class="k">private</span> <span class="t">String</span> type;      <span class="c">// "입금" / "출금" / "이체"</span>
+    <span class="k">private</span> <span class="k">long</span> amount;
+
+    <span class="a">@ManyToOne</span>              <span class="c">// 여러 거래가 하나의 계좌에 속함</span>
+    <span class="a">@JoinColumn</span>(name = <span class="s">"account_id"</span>)
+    <span class="k">private</span> <span class="t">Account</span> account;
+}</pre>
+      </details>
+    </div>
+
+    <div class="lab"><div class="lbl">✏️ 실습문제</div>
+      <h4>실습 2. 검증(Validation) 붙이기</h4>
+      <p><code>spring-boot-starter-validation</code>을 추가하고, DTO에 <code>@NotBlank</code>·<code>@Positive</code> 같은 애너테이션과 컨트롤러의 <code>@Valid</code>로 잘못된 요청을 자동으로 걸러내세요.</p>
+      <details><summary>힌트 보기</summary>
+<pre><span class="k">public record</span> <span class="t">CreateAccountRequest</span>(
+    <span class="a">@NotBlank</span> <span class="t">String</span> owner,
+    <span class="a">@PositiveOrZero</span> <span class="k">long</span> initialBalance
+) {}
+
+<span class="c">// 컨트롤러</span>
+<span class="k">public</span> <span class="t">Account</span> <span class="f">create</span>(<span class="a">@Valid</span> <span class="a">@RequestBody</span> <span class="t">CreateAccountRequest</span> req) { ... }</pre>
+      </details>
+    </div>
+
+    <div class="lab"><div class="lbl">✏️ 실습문제</div>
+      <h4>실습 3. 계좌 종류 상속 매핑 ★</h4>
+      <p>앞 단원의 상속을 JPA로 확장해 보자. <code>Account</code>를 부모로 두고 이자가 붙는 <code>SavingsAccount</code>를 자식으로 만들어 <b>상속 매핑</b>(<code>@Inheritance</code>)을 적용하고, <code>POST /accounts/{no}/interest</code>(이자 지급) API를 추가하세요.</p>
+      <details><summary>힌트 보기</summary>
+<pre><span class="a">@Entity</span>
+<span class="a">@Inheritance</span>(strategy = <span class="t">InheritanceType</span>.SINGLE_TABLE)
+<span class="a">@DiscriminatorColumn</span>(name = <span class="s">"account_type"</span>)
+<span class="k">public class</span> <span class="t">Account</span> { ... }
+
+<span class="a">@Entity</span>
+<span class="a">@DiscriminatorValue</span>(<span class="s">"SAVINGS"</span>)
+<span class="k">public class</span> <span class="t">SavingsAccount</span> <span class="k">extends</span> <span class="t">Account</span> {
+    <span class="k">private</span> <span class="k">double</span> interestRate;
+    <span class="k">public</span> <span class="k">void</span> <span class="f">addInterest</span>() { <span class="f">deposit</span>((<span class="k">long</span>)(<span class="f">getBalance</span>() * interestRate)); }
+}</pre>
+      </details>
+    </div>
+  </section>
+
+  <footer>은행 계좌 관리 REST API (Spring Boot) · 학습 교안<br>계층형 아키텍처 · Spring Data JPA · REST · Postman 종합 실습</footer>
+</div>
+</body>
+</html>
